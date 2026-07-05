@@ -49,20 +49,20 @@ https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode */
 ; Level         -   output level
 
 <Cabbage>
-form caption("Dynamic Looper") size(1125,500), colour( 30, 30, 70), pluginId("T3Pl"), guiMode("queue")
+form caption("Dynamic Looper") size(1190,440), colour( 30, 30, 70), pluginId("T3Pl"), guiMode("queue")
 
 #define SLIDER_STYLE colour(60, 60,100), textColour("white"), trackerColour(210,210,250), valueTextBox(1)
 
-hslider    bounds(  0,  5,1125, 15), channel("LoopStart"), range(0, 1, 0,1,0.001), popupText(0), trackerColour(210,210,250)
-soundfiler bounds(  5, 25,1115,175), channel("beg","len"),  colour(0, 255, 255, 255), fontColour(160, 160, 160, 255), 
+hslider    bounds(  0,  5,1190, 15), channel("LoopStart"), range(0, 1, 0,1,0.001), popupText(0), trackerColour(210,210,250)
+soundfiler bounds(  5, 25,1180,175), channel("beg","len"),  colour(0, 255, 255, 255), fontColour(160, 160, 160, 255), 
 image      bounds(  5, 25,   1,175), alpha(0.5), channel("LoopRegion"), colour(200,200,255)
 label      bounds(  6, 24, 560, 14), text(""), align("left"), colour(0,0,0,0), fontColour(200,200,200), channel("stringbox")
-hslider    bounds(  0,200,1125, 15), channel("LoopEnd"),   range(0, 1, 1,1,0.001), popupText(0), trackerColour(210,210,250)
+hslider    bounds(  0,200,1190, 15), channel("LoopEnd"),   range(0, 1, 1,1,0.001), popupText(0), trackerColour(210,210,250)
 
 filebutton bounds(  5,230, 80, 25), text("Open File","Open File"), fontColour("white") channel("filename"), shape("ellipse")
 checkbox   bounds(  5,260, 95, 25), channel("PlayStop"), text("Play/Stop"), colour("yellow"), fontColour:0("white"), fontColour:1("white")
 
-image      bounds(100,225,400,120), colour(0,0,0,0), outlineThickness(1), corners(5)
+image      bounds(100,225,465,120), colour(0,0,0,0), outlineThickness(1), corners(5)
 {
 label      bounds(  0,  2,385, 12), text("L   O   O   P"), fontColour("white")
 checkbox   bounds( 10, 80, 95, 14), channel("Window"), text("Window"), colour("yellow"), fontColour:0("white"), fontColour:1("white")
@@ -78,25 +78,26 @@ groupbox   bounds( 125, 25,120, 80), plant("Y to Trans."), text("Y Controls"), f
  checkbox   bounds( 10, 53,110, 15), channel("Y2Filt"), text("Filters"), value(0), fontColour:0("white"), fontColour:1("white")
  }
  
-rslider    bounds(255, 20, 70, 90), channel("LPFRes"),   range(0.5,25,0.5), text("Resonance"), visible(0) $SLIDER_STYLE
-rslider    bounds(320, 20, 70, 90), channel("Portamento"),   range(0,1,0.00), text("Portamento"), $SLIDER_STYLE
+rslider    bounds(255, 20, 70, 90), channel("LPFRes"),   range(0.5,25,0.5), text("LPF. Res."), visible(0) $SLIDER_STYLE
+rslider    bounds(320, 20, 70, 90), channel("HPFRes"),   range(0.5,25,0.5), text("HPF. Res."), visible(0) $SLIDER_STYLE
+rslider    bounds(385, 20, 70, 90), channel("Portamento"),   range(0,1,0.00), text("Portamento"), $SLIDER_STYLE
 }
 
-image      bounds(505,225,155,120), colour(0,0,0,0), outlineThickness(1), corners(5)
+image      bounds(570,225,155,120), colour(0,0,0,0), outlineThickness(1), corners(5)
 {
 label      bounds(  0,  2,155, 12), text("S   P   E   E   D"), fontColour("white")
 rslider    bounds( 10, 20, 70, 90), channel("transpose"), range(-72, 72, 0,1,0.01), text("Semitones"), $SLIDER_STYLE
 rslider    bounds( 75, 20, 70, 90), channel("speed"),     range(0, 32.00, 1, 0.5, 0.001), text("Speed"), $SLIDER_STYLE
 }
 
-image      bounds(665,225,155,120), colour(0,0,0,0), outlineThickness(1), corners(5)
+image      bounds(730,225,155,120), colour(0,0,0,0), outlineThickness(1), corners(5)
 {
 label      bounds(  0,  2,155, 12), text("E   N   V   E   L   O   P   E"), fontColour("white")
 rslider    bounds( 10, 20, 70, 90), channel("AttTim"),    range(0, 5, 0.01, 0.5, 0.001), text("Att. Time"), $SLIDER_STYLE
 rslider    bounds( 75, 20, 70, 90), channel("RelTim"),    range(0.01, 5, 0.05, 0.5, 0.001), text("Rel. Time"), $SLIDER_STYLE
 }
 
-image      bounds(825,225,295,120), colour(0,0,0,0), outlineThickness(1), corners(5)
+image      bounds(890,225,295,120), colour(0,0,0,0), outlineThickness(1), corners(5)
 {
 label      bounds(  0,  2,285, 12), text("C   O   N   T   R   O   L"), fontColour("white")
 rslider    bounds( 10, 20, 70, 90), channel("MidiRef"),   range(0,127,60, 1, 1), text("MIDI Ref."), $SLIDER_STYLE
@@ -105,7 +106,7 @@ rslider    bounds(150, 20, 70, 90), channel("PchBnd"),    range(  0,  24.00, 2, 
 rslider    bounds(215, 20, 70, 90), channel("level"),     range(  0,  3.00, 1, 0.5), text("Level"), $SLIDER_STYLE
 }
 
-keyboard bounds(  5,350, 1115, 75)
+keyboard bounds(  5,350, 1180, 75)
 
 label    bounds(  5,427,120, 12), text("Iain McCurdy |2014|"), align("left"), fontColour("Silver")
 </Cabbage>
@@ -190,6 +191,7 @@ instr    1    ; Read in widgets
 
  gkY2Filt          cabbageGetValue     "Y2Filt"
                    cabbageSet          changed:k(gkY2Filt), "LPFRes", "visible", gkY2Filt
+                   cabbageSet          changed:k(gkY2Filt), "HPFRes", "visible", gkY2Filt
 
 ; read soundfiler bounds
 iBounds[]          cabbageGet          "beg", "bounds"
@@ -402,12 +404,13 @@ instr    2    ; Sample triggered by 'play/stop' button
   endif
 
    ; Y Filters
-   if gkMOUSE_DOWN_LEFT==1 && gkY2Filt==1 then
+   if gkY2Filt==1 then
     kLPFRes        cabbageGetValue     "LPFRes"
+    kHPFRes        cabbageGetValue     "HPFRes"
     a1             zdf_2pole           a1, a(cpsoct(gkLPF_CF)), kLPFRes    ; lowpass
     a2             zdf_2pole           a2, a(cpsoct(gkLPF_CF)), kLPFRes
-    a1             zdf_2pole           a1, a(cpsoct(gkHPF_CF)), kLPFRes, 1 ; highpass
-    a2             zdf_2pole           a2, a(cpsoct(gkHPF_CF)), kLPFRes, 1
+    a1             zdf_2pole           a1, a(cpsoct(gkHPF_CF)), kHPFRes, 1 ; highpass
+    a2             zdf_2pole           a2, a(cpsoct(gkHPF_CF)), kHPFRes, 1
    endif
   
   ; Mouse Gate
