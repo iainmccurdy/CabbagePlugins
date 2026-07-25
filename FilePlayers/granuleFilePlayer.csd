@@ -21,7 +21,8 @@ https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode */
 ;                This is limited to 128 layers but if more are needed just trigger multiple notes.
 ; Speed Ratio - speed of movement through the sound file as a ratio with normal speed
 ; Grain Mode  - direction of the playback of each individual grain: Fwd, Bwd or randomly Fwd or Bwd
-; Start       - where to start reading grains from within the chosen sound file as a ratio of its full length
+; Start (slider underneath the file viewer)
+;             - where to start reading grains from within the chosen sound file as a ratio of its full length
 ;                an indicator on the waveform provides visual confirmation of the start position.
 ;                this indicator does not move as the note progresses 
 ;                as there are too many factors (including random ones) 
@@ -46,12 +47,15 @@ https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode */
 <Cabbage>
 form caption("Granule File Player") size(875,710), colour("Silver") pluginId("SWPl"), guiMode("queue")
 
-#define SliderStyleK #textColour("Black"), textColour("Black"), fontColour("Black"), valueTextBox(1), colour(50,110, 80), trackerColour(150,210,180)#
-#define SliderStyleI #textColour("Black"), textColour("Black"), fontColour("Black"), valueTextBox(1), colour(250,110,110), trackerColour(255,200,200)#
+#define SliderStyleK textColour("Black"), textColour("Black"), fontColour("Black"), valueTextBox(1), colour(50,110, 80), trackerColour(150,210,180)
+#define SliderStyleI textColour("Black"), textColour("Black"), fontColour("Black"), valueTextBox(1), colour(250,110,110), trackerColour(255,200,200)
+#define HSliderStyleI valueTextBox(0), colour(250,110,110), trackerColour(255,200,200)
 
-soundfiler bounds(  5,  5,575,175), channel("beg","len"), channel("filer1"), colour(0, 255, 255, 255), fontColour(160, 160, 160, 255)
+soundfiler bounds(  5,  5,575,160), channel("filer1"), colour(0, 255, 255, 255), fontColour(160, 160, 160, 255)
 label      bounds( 10,  7,200, 14), text(""), align("left"), channel("FileName")
 image      bounds(  5,  5,  2,175), channel("StartIndic"), alpha(0.5)
+hslider    bounds(  0,165,585, 15), channel("Inskip"), range(0,1,0), $HSliderStyleI
+
 label      bounds(630,139,195, 13), text("Grain Size →"), fontColour("Black")
 label      bounds(605,105,100, 13), text("Grain Gap →"), align("left"), rotate(4.71, 0,13), fontColour("Black")
 xypad      bounds(585,  5,285,175), channel("GSizeXY","GapXY"), alpha(0.85)
@@ -61,17 +65,17 @@ image      bounds(  5,185,575,110), colour(0,0,0,0), outlineThickness(1), outlin
 filebutton bounds( 15, 20, 80, 22), text("Open File","Open File"), fontColour("White") channel("filename"), shape("ellipse")
 checkbox   bounds( 15, 55, 95, 22), channel("PlayStop"), text("Play/Stop"), fontColour:0("Black"), fontColour:1("Black")
 
-rslider    bounds(100, 17, 90, 90), channel("Amp"),    range(0,5,0.5,0.5), text("Level"), $SliderStyleK
-rslider    bounds(165, 17, 90, 90), channel("NVoice"), range(1,128,32,1,1), text("N. Voices"), $SliderStyleI
-rslider    bounds(230, 17, 90, 90), channel("SpeedRatio"), text("Speed Ratio"), range(0.0001,20,1,0.25,0.00001), $SliderStyleI
+rslider    bounds(105, 17, 90, 90), channel("Amp"),    range(0,5,0.5,0.5), text("Level"), $SliderStyleK
+rslider    bounds(185, 17, 90, 90), channel("NVoice"), range(1,128,32,1,1), text("N. Voices"), $SliderStyleI
+rslider    bounds(265, 17, 90, 90), channel("SpeedRatio"), text("Speed Ratio"), range(0.0001,20,1,0.25,0.00001), $SliderStyleI
 
-label      bounds(340, 23, 66, 12), text("Grain Mode"), fontColour("Black"), align("centre")
-checkbox   bounds(340, 40, 80, 12), channel("mode1"), text("Reverse"), colour("Yellow"), fontColour:0("Black"), fontColour:1("Black"), radioGroup(2)
-checkbox   bounds(340, 55, 80, 12), channel("mode2"), text("Random"), colour("Yellow"), fontColour:0("Black"), fontColour:1("Black"), radioGroup(2)
-checkbox   bounds(340, 70, 80, 12), channel("mode3"), text("Forward"), colour("Yellow"), fontColour:0("Black"), fontColour:1("Black"), radioGroup(2), value(1)
+label      bounds(380, 23, 66, 12), text("Grain Mode"), fontColour("Black"), align("centre")
+checkbox   bounds(380, 40, 80, 12), channel("mode1"), text("Reverse"), colour("Yellow"), fontColour:0("Black"), fontColour:1("Black"), radioGroup(2)
+checkbox   bounds(380, 55, 80, 12), channel("mode2"), text("Random"), colour("Yellow"), fontColour:0("Black"), fontColour:1("Black"), radioGroup(2)
+checkbox   bounds(380, 70, 80, 12), channel("mode3"), text("Forward"), colour("Yellow"), fontColour:0("Black"), fontColour:1("Black"), radioGroup(2), value(1)
 
-rslider    bounds(425, 17, 90, 90), channel("Inskip"), text("Start"), range(0,0.99,0), $SliderStyleI
-rslider    bounds(490, 17, 90, 90), channel("InskipOS"), text("Start OS"), range(0,30,0,0.25,0.00001), $SliderStyleI
+;rslider    bounds(415, 17, 90, 90), channel("Inskip"), text("Start"), range(0,0.99,0), $SliderStyleI
+rslider    bounds(460, 17, 90, 90), channel("InskipOS"), text("Start OS"), range(0,30,0,0.25,0.00001), $SliderStyleI
 }
 
 image      bounds(585,185,285,110), colour(0,0,0,0), outlineThickness(1), outlineColour("Grey")
@@ -83,13 +87,19 @@ rslider    bounds(130, 17, 90, 90), channel("att"), text("Gr. Att."), range(0,10
 rslider    bounds(195, 17, 90, 90), channel("dec"), text("Gr. Dec."), range(0,100,30,1,1), $SliderStyleI
 }
 
-image      bounds(  5,300,155,210), colour(0,0,0,0), outlineThickness(1), outlineColour("Grey")
+image      bounds(  5,300,155,310), colour(0,0,0,0), outlineThickness(1), outlineColour("Grey")
 {
 label      bounds(  0,  2,155, 13), text("D E N S I T Y"), fontColour("Black")
 rslider    bounds(  0, 17, 90, 90), channel("Gap"), text("Grain Gap"), range(0,10,0,0.25,0.00001), $SliderStyleK
 rslider    bounds( 65, 17, 90, 90), channel("GapOS"), text("Gap OS"), range(0,100,60,1,1), $SliderStyleI
 rslider    bounds(  0,110, 90, 90), channel("HPF"), text("HPF"), range(4,14,4,3), $SliderStyleK
 rslider    bounds( 65,110, 90, 90), channel("LPF"), text("LPF"), range(4,14,14), $SliderStyleK
+label      bounds( 25,240,100, 30), text("SIZE"), align("centre"), fontColour("Black")
+label      bounds(  5,210, 20, 30), text("1"), align("centre"), fontColour("Black")
+label      bounds(128,210, 20, 30), text("2"), align("centre"), fontColour("Black")
+label      bounds(  5,280, 20, 30), text("3"), align("centre"), fontColour("Black")
+label      bounds(128,280, 20, 30), text("4"), align("centre"), fontColour("Black")
+xypad      bounds(  5,210,145,100), channel("GSizeX","GSizeY"), alpha(0.85)
 }
 
 image      bounds(165,300,415,310), colour(0,0,0,0), outlineThickness(1), outlineColour("Grey")
@@ -115,7 +125,7 @@ combobox   bounds(  5, 90, 70, 18), channel("PitchType"), items("Semitones","Rat
  rslider    bounds( 65,  0, 90, 90), channel("Ratio2"), text("Ratio 2"), range(0.125,32,1.2,0.5,0.00001), $SliderStyleI, active(0), alpha(0.5)
  rslider    bounds(130,  0, 90, 90), channel("Ratio3"), text("Ratio 3"), range(0.125,32,1.5,0.5,0.00001), $SliderStyleI, active(0), alpha(0.5)
  rslider    bounds(195,  0, 90, 90), channel("Ratio4"), text("Ratio 4"), range(0.125,32,0.5,0.5,0.00001), $SliderStyleI, active(0), alpha(0.5)
- rslider    bounds(260,  0, 90, 90), channel("RatioG"), text("Ratio Glob"),range(0.125,32,1,0.5,0.00001), $SliderStyleI
+ rslider    bounds(260,  0, 90, 90), channel("RatioG"), text("Ratio Glob"),range(0.015625,32,1,0.5,0.00001), $SliderStyleI
  }
 
  checkbox    bounds( 15,145, 80, 22), channel("MixMode"), text("Mix"), colour("Yellow"), fontColour:0("Black"), fontColour:1("Black")
@@ -311,10 +321,26 @@ instr    1
   kL4              =                   ((1-kMorphY) * kMorphX) ^ ipow
                    cabbageSetValue     "Lev4", kL4
  endif
+
+ ipow2 = 4
+ ; size-morph XY pad
+ kGSizeX           cabbageGetValue     "GSizeX"
+ kGSizeY           cabbageGetValue     "GSizeY"
+ if changed:k(kGSizeX,kGSizeY)==1 then
+  kGS1             scale               (kGSizeY * (1-kGSizeX)) ^ ipow2, 16, 0.0625
+                   cabbageSetValue     "GSize1", kGS1
+  kGS2             scale               (kGSizeY * kGSizeX) ^ ipow2, 16, 0.0625
+                   cabbageSetValue     "GSize2", kGS2
+  kGS3             scale               ((1-kGSizeY) * (1-kGSizeX)) ^ ipow2, 16, 0.0625
+                   cabbageSetValue     "GSize3", kGS3
+  kGS4             scale               ((1-kGSizeY) * kGSizeX) ^ ipow2, 16, 0.0625
+                   cabbageSetValue     "GSize4", kGS4
+ endif 
  
  gkInskip,kT       cabbageGetValue     "Inskip"
  gkInskipOS        cabbageGetValue     "InskipOS"
-                   cabbageSet          kT, "StartIndic", "bounds", 4 + (gkInskip*600), 5, 2, 175
+ iBounds[]         cabbageGet          "filer1", "bounds"
+                   cabbageSet          kT, "StartIndic", "bounds", iBounds[0] + (gkInskip*iBounds[2]), iBounds[1], 2, iBounds[3]
  gkLimiter         cabbageGetValue     "Limiter"
 
  gSfilepath        cabbageGetValue     "filename"
@@ -496,7 +522,6 @@ instr    3 ; MIDI triggered instrument
    a2              sum                 a2_1, a2_2, a2_3, a2_4
   endif
  
-
   gaMixL            +=                 a1 * aenv
   gaMixR            +=                 a2 * aenv
  endif

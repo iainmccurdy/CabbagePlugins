@@ -79,8 +79,10 @@ https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode */
 ; Mix        - crossfader between the non-filtered and filtered audio
 ; Level      - output level of the effect (raw gain)
 
+; The XY Pad provides dual control of cutoff frequency (vertical axis) and mix (horizontal axis)
+
 <Cabbage>
-form caption("Lowpass Filter") size(1275,130), pluginId("LPFl"), colour( 70, 90,100), guiMode("queue")
+form caption("Lowpass Filter") size(1425,130), pluginId("LPFl"), colour( 70, 90,100), guiMode("queue")
 
 #define SLIDER_DESIGN colour(100,140,150), trackerColour(200,240,250), textColour("white"), fontColour("white"), valueTextBox(1)
 
@@ -128,6 +130,8 @@ image    bounds(815,  0,295,130), outlineThickness(4), colour( 70, 90,100)
 label    bounds(  0,  6,295, 13), text("E N V E L O P E"), fontColour("white"), align("centre")
 checkbox bounds(  5,  5, 80, 12), text("Filter"), channel("FEnvActive"), fontColour:0("white"), fontColour:1("white")
 checkbox bounds(  5, 20, 80, 12), text("Amplitude"), channel("AEnvActive"), fontColour:0("white"), fontColour:1("white")
+keyboard bounds(205,  5, 12, 12), scrollbars(0),  mouseOverKeyColour("lime"), keyWidth(100)
+label    bounds(220,  5,120, 12), fontColour("white"), align("left"), text("Test")
 rslider  bounds( 15, 35, 70, 80), channel("EnvAtt"), text("Attack"), range(0.01,5,0.01,0.5), $SLIDER_DESIGN
 rslider  bounds( 80, 35, 70, 80), channel("EnvDec"), text("Decay"), range(0.01,5,2,0.5), $SLIDER_DESIGN
 rslider  bounds(145, 35, 70, 80), channel("EnvSus"), text("Sustain"), range(0,1,0,0.5), $SLIDER_DESIGN
@@ -139,10 +143,15 @@ image    bounds(1110,  0,165,130), outlineThickness(4), colour( 70, 90,100)
 {
 label    bounds(  0,  6,165, 13), text("O U T P U T"), fontColour("white"), align("centre")
 rslider  bounds( 15, 25, 70, 90), channel("mix"), text("Mix"), range(0,1.00,1), $SLIDER_DESIGN
-rslider  bounds( 80, 25, 70, 90), channel("level"), text("Level"), range(0, 1.00, 1), $SLIDER_DESIGN
+rslider  bounds( 80, 25, 70, 90), channel("level"), text("Level"), range(0, 1.00, .1), $SLIDER_DESIGN
 }
 
-keyboard bounds( 5,130,1265,80) ; hidden, normally just for testing
+image    bounds(1275,0,150,150), outlineColour("white"), outlineThickness(4), colour(0,0,0,0)
+label    bounds(1255,110,195, 20), text("Mix →"), fontColour("white")
+label    bounds(1290, 75,100, 20), text("Freq →"), align("left"), rotate(4.71, 0,13), fontColour("white")
+xypad    bounds(1275,0,150,150), channel("X","Y"), alpha(0.5), ballColour("white")
+
+;keyboard bounds( 5,130,1265,80) ; hidden, normally just for testing
 
 label   bounds(  5, 115,120, 11), text("Iain McCurdy |2012|"), align("left"), fontColour("silver")
 </Cabbage>
@@ -185,9 +194,16 @@ instr 1 ; MIDI-triggered envelope
     gkMIDIEnv     linsegr         0, iEnvAtt, 1, iEnvDec, iEnvSus, iEnvRel, 0
 endin
 
-
+ 
 instr    2 ; filter (always on)
     kPortTime     linseg          0, 0.01, 0.05
+
+    ; XY pad control
+    kX,kT         cabbageGetValue "X"
+                  cabbageSetValue "mix", kX, kT
+    kY,kT         cabbageGetValue "Y"
+                  cabbageSetValue "cf", scale:k(kY^2,20000,1), kT
+    
     kRate         cabbageGetValue "rate"
     kSkew         cabbageGetValue "skew"
     kShape        cabbageGetValue "shape"

@@ -124,7 +124,7 @@ ksmps = 32
 nchnls = 2
 0dbfs = 1
 
-                      massign             0,3
+                      massign             0, 2
 gichans               init                0
 giFileLen             init                0
 giReady               init                0
@@ -228,12 +228,13 @@ if kMouseMoveFlag==1 && changed:k(kMouseX - kMouseXPrev)==1 then
 endif
 kMouseXPrev        =                   kMouseX
 
+; mouse to transpose
 kYNorm   limit   1 - ((kMouseY-iBounds[1]) / iBounds[3]), 0, 1
 if kMouseDownLeft==1 && cabbageGetValue:k("Y2Trans")==1 then
           cabbageSetValue "transpose", scale:k(kYNorm,72,-72), changed:k(kYNorm)
 endif
 
-  ; filter parameters (right-click mouse click-and-drag Y axis over file panel)
+  ; filter parameters from mouse Y position over file viewer
   kLPF_CF          scale               (kYNorm * 2), 14, 4
   kLPF_CF          limit               kLPF_CF, 4, 14
   gkLPF_CF         port                kLPF_CF, 0.05
@@ -256,14 +257,6 @@ endif
 
  gkMOUSE_DOWN_LEFT  cabbageGetValue     "MOUSE_DOWN_LEFT"
  gkMOUSE_DOWN_RIGHT cabbageGetValue     "MOUSE_DOWN_RIGHT" ; Read in mouse left click status
-
- ; set loop points (rsliders) from click and drag...
- if trigger:k(gkMOUSE_DOWN_LEFT,0.5,1)==1 then
-  if changed:k(kbeg,klen)==1 then
-                   cabbageSetValue     "LoopStart", kbeg/gkTabLen,k(1)
-                   cabbageSetValue     "LoopEnd", (kbeg+klen)/gkTabLen,k(1)
-  endif
- endif
   
  gkPlayStop        cabbageGetValue     "PlayStop"
  gktranspose       cabbageGetValue     "transpose"
@@ -342,10 +335,30 @@ endin
 
 
 
-instr    2    ; Sample triggered by 'play/stop' button
- if gkPlayStop==0&&gkMOUSE_DOWN_RIGHT==0 then                    ; allow right-click to sustain playing even if PLAY button is not pressed
-                   turnoff
+instr    2    ; Sample player via both GUI and MIDI
+ kporttime          linseg              0, 0.001, 0.05        ; portamento time function. (Rises quickly from zero to a held value.)
+
+ idefault           =                   1
+ iMIDI              =                   0
+                    mididefault         idefault, iMIDI       ; ivalue overwritten by idefault if MIDI driven
+ if iMIDI==1 then ; MIDI
+  icps              cpsmidi                                   ; read in midi note data as cycles per second
+  iamp              ampmidi             1                     ; read in midi velocity (as a value within the range 0 - 1)
+  iMidiRef          cabbageGetValue     "MidiRef"
+  kPchBnd           pchbend             0, 1                  ; read in pitch bend
+  kPchBnd           *=                  gkPchBndRng
+  kPchBnd           portk               kPchBnd, kporttime
+  kspeed            =                   (icps/cpsmidinn(iMidiRef)) * semitone(kPchBnd)
+ else              ; non-MIDI
+  if gkPlayStop==0&&gkMOUSE_DOWN_RIGHT==0 then                    ; allow right-click to sustain playing even if PLAY button is not pressed
+                    turnoff
+  endif
+  iamp              =                   1
+  kspeed            portk               gkspeed,kporttime*gkPortamento ; apply portamento smoothing to changes in speed
  endif
+
+
+
 
  if giReady==1 then                                              ; i.e. if a file has been loaded
 
@@ -359,7 +372,6 @@ instr    2    ; Sample triggered by 'play/stop' button
   kenv             expcurve            kenv,8                         ; remap amplitude value with a more natural curve
   aenv             interp              kenv                           ; interpolate and create a-rate envelope
   kporttime        linseg              0,0.001,1                      ; portamento time function. (Rises quickly from zero to a held value.)
-  kspeed           portk               gkspeed,kporttime*gkPortamento ; apply portamento smoothing to changes in speed
   klevel           portk               gklevel,kporttime*0.1          ; apply portamento smoothing to changes
   
   ; dials/click and drag
@@ -420,79 +432,13 @@ instr    2    ; Sample triggered by 'play/stop' button
    a2              *=                  aMEnv
   endif
   
-                   outs                a1 * aenv * klevel, a2 *  aenv * klevel
+                   outs                a1 * aenv * klevel * iamp, a2 *  aenv * klevel * iamp
    
  endif
 
 endin
 
 
-
-
-instr    3    ; sample triggered by midi note
- kporttime         linseg              0,0.001,0.05          ; portamento time function. (Rises quickly from zero to a held value.)
- icps              cpsmidi                                   ; read in midi note data as cycles per second
- iamp              ampmidi             1                     ; read in midi velocity (as a value within the range 0 - 1)
- iMidiRef          cabbageGetValue     "MidiRef"
- kPchBnd           pchbend             0, 1                  ; read in pitch bend
- kPchBnd           *=                  gkPchBndRng
- kPchBnd           portk               kPchBnd, kporttime
-
- if giReady = 1 then                                            ; i.e. if a file has been loaded
-  iAttTim          cabbageGetValue     "AttTim"                 ; read in widgets
-  iRelTim          cabbageGetValue     "RelTim"
-  if iAttTim>0 then                                             ; is amplitude envelope attack time is greater than zero...
-   kenv            linsegr             0,iAttTim,1,iRelTim,0    ; create an amplitude envelope with an attack, a sustain and a release segment (senses realtime release)
-  else
-   kenv            linsegr             1,iRelTim,0              ; create an amplitude envelope with a sustain and a release segment (senses realtime release)
-  endif
-  kenv             expcurve            kenv,8                   ; remap amplitude value with a more natural curve
-  aenv             interp              kenv                     ; interpolate and create a-rate envelope
-  ispeed           =                   icps/cpsmidinn(iMidiRef) ; derive playback speed from note played in relation to a reference note (MIDI note 60 / middle C)
-  klevel           portk               gklevel,kporttime        ; apply portamento smoothing to changes in level
-    
-
-  kLoopStart       lineto              gkLoopStart,kporttime
-  kLoopEnd         lineto              gkLoopEnd,kporttime
-
-   kLoopEnd        =                   (kLoopEnd=kLoopStart?kLoopEnd+0.001:kLoopEnd)
-   kLoopLen        =                   abs(kLoopEnd-kLoopStart)
-   kdir            =                   (kLoopEnd>kLoopStart?1:-1)
-   krate           divz                ispeed, kLoopLen*giFileLen, 1
-   arate           interp              krate
-   if gkmode==1    then                          ; fwd
-    aphasor        phasor              arate*kdir
-   elseif gkmode==2 then                         ; bwd
-    aphasor        phasor              -arate*kdir
-   else                                          ; fwd-bwd
-    aphasor        poscil              1,-arate*0.5*kdir,gitri
-   endif
-   
-   aWindow         tablei              aphasor, giTukey, 1, 0, 1
-   
-   kLoopStart      min                 kLoopStart,kLoopEnd
-   aLoopStart      interp              kLoopStart
-   aLoopLen        interp              kLoopLen
-   aphasor         =                   (aphasor*aLoopLen)+aLoopStart
-   
-   if gichans==1 then                                                         ; if mono...
-    a1             table3              aphasor, gitableL, 1, 0, 1
-    a2             =                   a1
-   elseif gichans==2 then                                                     ; otherwise, if stereo...
-    a1             table3              aphasor, gitableL, 1, 0, 1
-    a2             table3              aphasor, gitableR, 1, 0, 1
-   endif               
-
-  ; conditionally apply loop window
-  if gkWindow==1 then
-   a1              *=                  aWindow
-   a2              *=                  aWindow
-  endif
-                   outs                a1 * aenv * klevel, a2 *  aenv * klevel
-   
- endif
-
-endin
 
 
  instr 200 ; detect pitch of sample and send to MIDI reference

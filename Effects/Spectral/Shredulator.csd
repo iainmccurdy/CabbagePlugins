@@ -140,7 +140,7 @@ image    bounds(  5,430,635,120), colour(235,240,255), outlineColour("DarkGrey")
 {  
 label    bounds(  0,  5,635, 16), text("F    I    L    T    E    R"), fontColour("Black"), align("centre")
 checkbox bounds( 15, 25, 70, 15), text("On/Off"), channel("FiltOnOff"), fontColour:0("black"), fontColour:1("black"), colour("yellow")
-rslider  bounds( 85, 20, 90,90), text("Freq. Mix"), textBox(1), valueTextBox(1), channel("BPF_FreqMin"), range(20, 20000, 100, 0.5, 1), $SLIDER_DESIGN
+rslider  bounds( 85, 20, 90,90), text("Freq. Min"), textBox(1), valueTextBox(1), channel("BPF_FreqMin"), range(20, 20000, 100, 0.5, 1), $SLIDER_DESIGN
 rslider  bounds(175, 20, 90,90), text("Freq. Max"), textBox(1), valueTextBox(1), channel("BPF_FreqMax"), range(20, 20000, 5000, 0.5, 1), $SLIDER_DESIGN
 rslider  bounds(295, 20, 90,90), text("Bandwidth Min."), textBox(1), valueTextBox(1), channel("BPF_BWMin"), range(0.01, 4, 0.1, 0.5, 0.001), $SLIDER_DESIGN
 rslider  bounds(385, 20, 90,90), text("Bandwidth Max."), textBox(1), valueTextBox(1), channel("BPF_BWMax"), range(0.01, 4,  1, 0.5, 0.001), $SLIDER_DESIGN

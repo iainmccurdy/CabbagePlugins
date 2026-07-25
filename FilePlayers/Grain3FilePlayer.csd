@@ -500,7 +500,7 @@ instr    2    ; triggered by 'play/stop' button and right-click on file panel
    if gkDualOnOff==1 then
     a1b            Grain3b             gkpch + gkTransDiff, gkphs + gkPtrDiff, gkspd, gkfreeze, gkrange, gkshape, gkfmd, gkpmd, kdur, kdens*gkDensRatio, 600, 1, iwfn, -2, -2 , rnd(1000), 8, iPhsMode, gkDensRnd, gkSizeRnd
     if gkDelay>0 then
-     a1b           vdelay              a1b, (gkDelay * 1000) / kdens, 5000
+     a1b           vdelay              a1b, a((gkDelay * 1000) / kdens), 5000
     endif
     a1             +=                  a1b
    endif
@@ -532,8 +532,8 @@ instr    2    ; triggered by 'play/stop' button and right-click on file panel
     a1b            Grain3b             gkpch+gkTransDiff, gkphs+gkPtrDiff, gkspd, gkfreeze, gkrange, gkshape, gkfmd, gkpmd, kdur, kdens*gkDensRatio, 600, 1, iwfn, -2, -2 , rnd(1000), 8, iPhsMode, gkDensRnd, gkSizeRnd
     a2b            Grain3b             gkpch+gkTransDiff, gkphs+gkPtrDiff, gkspd, gkfreeze, gkrange, gkshape, gkfmd, gkpmd, kdur, kdens*gkDensRatio, 600, 2, iwfn, -2, -2 , rnd(1000), 8, iPhsMode, gkDensRnd, gkSizeRnd
     if gkDelay>0 then
-     a1b           vdelay              a1b, (gkDelay * 1000) / kdens, 5000
-     a2b           vdelay              a2b, (gkDelay * 1000) / kdens, 5000
+     a1b           vdelay              a1b, a((gkDelay * 1000) / kdens), 5000
+     a2b           vdelay              a2b, a((gkDelay * 1000) / kdens), 5000
     endif
     a1             +=                  a1b * gkV2L
     a2             +=                  a2b * gkV2R
@@ -617,7 +617,7 @@ instr    3 ; MIDI note triggered version
    if gkDualOnOff==1 then
     a1b           Grain3b              kFrqRatio + gkTransDiff, gkphs + gkPtrDiff, gkspd, gkfreeze, gkrange, gkshape, gkfmd, gkpmd, kdur, kdens*gkDensRatio, 600, 1, iwfn, -2, -2 , rnd(1000), 8, iPhsMode, gkDensRnd, gkSizeRnd
     if gkDelay>0 then
-     a1b          vdelay               a1b, (gkDelay * 1000) / kdens, 5000
+     a1b          vdelay               a1b, a((gkDelay * 1000) / kdens), 5000
     endif
     a1            +=                   a1b
    endif
@@ -647,8 +647,8 @@ instr    3 ; MIDI note triggered version
     a1b            Grain3b             kFrqRatio+gkTransDiff, gkphs+gkPtrDiff, gkspd, gkfreeze, gkrange, gkshape, gkfmd, gkpmd, kdur, kdens*gkDensRatio, 600, 1, iwfn, -2, -2 , rnd(1000), 8, iPhsMode, gkDensRnd, gkSizeRnd
     a2b            Grain3b             kFrqRatio+gkTransDiff, gkphs+gkPtrDiff, gkspd, gkfreeze, gkrange, gkshape, gkfmd, gkpmd, kdur, kdens*gkDensRatio, 600, 2, iwfn, -2, -2 , rnd(1000), 8, iPhsMode, gkDensRnd, gkSizeRnd
     if gkDelay>0 then
-     a1b           vdelay              a1b, (gkDelay * 1000) / kdens, 5000
-     a2b           vdelay              a2b, (gkDelay * 1000) / kdens, 5000
+     a1b           vdelay              a1b, a((gkDelay * 1000) / kdens), 5000
+     a2b           vdelay              a2b, a((gkDelay * 1000) / kdens), 5000
     endif
     a1             +=                  a1b
     a2             +=                  a2b

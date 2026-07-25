@@ -38,7 +38,9 @@ https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode */
 
 
 <Cabbage>
-form caption("Formant Filter"), colour("SlateGrey"), size(1430, 385), pluginId("form") , guiMode("queue") 
+form caption("Formant Filter"), colour("SlateGrey"), size(1430, 395), pluginId("form") , guiMode("queue") 
+
+#define SLIDER_DESIGN textColour("white"), valueTextBox(1), fontColour("white")
 
 ; input
 image bounds(  5,  5,140,285), colour(0,0,0,0), outlineColour("white"), corners(5), outlineThickness(2)
@@ -46,12 +48,12 @@ image bounds(  5,  5,140,285), colour(0,0,0,0), outlineColour("white"), corners(
 label    bounds(  0,  5,140, 15), text("I N P U T"), fontColour("White")
 label    bounds( 20,  37,100, 12), text("Input Source"), fontColour("white")
 combobox bounds( 20,  50,100, 20), channel("input"), value(1), text("Live", "Noise", "Buzz")
-rslider bounds(  0, 90, 80, 80), text("Gain"),       channel("gain"),     range(0, 5.00, 0.0, 0.5),         textColour("white"), valueTextBox(1), fontColour("white")
-rslider bounds( 60, 90, 80, 80), text("Depth"),     channel("pulsDep"),     range(0, 1, 1),         textColour("white"), valueTextBox(1), fontColour("white")
-rslider bounds(  0,190, 80, 80), text("Freq."), channel("pulsFreq"), range(0, 2000,  0, 0.5,0.01), textColour("white"), valueTextBox(1), fontColour("white"), visible(1)
-rslider bounds(  0,190, 80, 80), text("Buzz Freq."), channel("buzzFreq"), range(10, 2000, 130, 0.5,0.01), textColour("white"), valueTextBox(1), fontColour("white"), visible(0)
-rslider bounds( 60,190, 80, 80), text("Power"), channel("buzzPow"), range(0, 0.99, 0.95), textColour("white"), valueTextBox(1), fontColour("white"), visible(0)
-rslider bounds( 60,190, 80, 80), text("Shape"), channel("pulsShap"), range(0, 48,  4, 1,1), textColour("white"), valueTextBox(1), fontColour("white"), visible(1)
+rslider bounds(  0, 90, 80, 80), text("Gain"),       channel("gain"),     range(0, 5.00, 0.0, 0.5), $SLIDER_DESIGN
+rslider bounds( 60, 90, 80, 80), text("Depth"),     channel("pulsDep"),     range(0, 1, 1), $SLIDER_DESIGN
+rslider bounds(  0,190, 80, 80), text("Freq."), channel("pulsFreq"), range(0, 2000,  0, 0.5,0.01), visible(1), $SLIDER_DESIGN
+rslider bounds(  0,190, 80, 80), text("Buzz Freq."), channel("buzzFreq"), range(10, 2000, 130, 0.5,0.01), visible(0), $SLIDER_DESIGN
+rslider bounds( 60,190, 80, 80), text("Power"), channel("buzzPow"), range(0, 0.99, 0.95), textColour("white"), visible(0), $SLIDER_DESIGN
+rslider bounds( 60,190, 80, 80), text("Shape"), channel("pulsShap"), range(0, 48,  4, 1,1), visible(1), $SLIDER_DESIGN
 }
 
 
@@ -62,12 +64,12 @@ label    bounds(  0,  5,190, 11), text("H A R M O N I C    R E S O N A T O R"), 
 checkbox bounds( 10, 50, 80, 20), channel("FundOnOff"), text("On/Off"), value(0), fontColour:0("White"), fontColour:1("White")
 label    bounds(100, 35, 80, 14), text("Mode"), fontColour("White")
 combobox bounds(100, 50, 80, 20), channel("FundMode"), items("Manual", "MIDI"), value(1)
-rslider  bounds(  0, 95, 70, 80), text("Note"),   channel("FundNote"),  range(0,127,48,1,0.01), textColour("white"), fontColour("white"), valueTextBox(1)
-rslider  bounds( 60, 95, 70, 80), text("Freq."),  channel("FundFreq"),  range(8.176,12543.854,130.813,0.23,0.01), textColour("white"), fontColour("white"), valueTextBox(1)
-rslider  bounds(120, 95, 70, 80), text("Res."),   channel("FundRes"),  range(0,0.95,0.3,0.5), textColour("white"), fontColour("white"), valueTextBox(1)
-rslider  bounds(  0,185, 70, 80), text("Attack"),   channel("FundAtt"),  range(0.01,5,0.1,0.5), textColour("white"), fontColour("white"), valueTextBox(1)
-rslider  bounds( 60,185, 70, 80), text("Release"),   channel("FundRel"),  range(0.01,5,0.1,0.5), textColour("white"), fontColour("white"), valueTextBox(1)
-rslider  bounds(120,185, 70, 80), text("Damping"),   channel("FundDamp"),  range(50,18000,12000,0.5,1), textColour("white"), fontColour("white"), valueTextBox(1)
+rslider  bounds(  0, 95, 70, 80), text("Note"),   channel("FundNote"),  range(0,127,48,1,0.01), $SLIDER_DESIGN
+rslider  bounds( 60, 95, 70, 80), text("Freq."),  channel("FundFreq"),  range(8.176,12543.854,130.813,0.23,0.01), $SLIDER_DESIGN
+rslider  bounds(120, 95, 70, 80), text("Res."),   channel("FundRes"),  range(0,0.95,0.3,0.5), $SLIDER_DESIGN
+rslider  bounds(  0,185, 70, 80), text("Attack"),   channel("FundAtt"),  range(0.01,5,0.1,0.5), $SLIDER_DESIGN
+rslider  bounds( 60,185, 70, 80), text("Release"),   channel("FundRel"),  range(0.01,5,0.1,0.5), $SLIDER_DESIGN
+rslider  bounds(120,185, 70, 80), text("Damping"),   channel("FundDamp"),  range(50,18000,12000,0.5,1), $SLIDER_DESIGN
 }
 
 ; formant filter
@@ -87,42 +89,40 @@ vslider bounds(440, 10, 30,190), text("f5"), channel("f5Gain"), range(0, 1.00, 1
 combobox bounds(365, 210,100, 20), channel("voice"), value(1), text("bass", "tenor", "countertenor", "alto", "soprano")
 combobox bounds(365, 240,100, 20), channel("filter"), value(1), text("reson 1", "reson 2", "butterworth")
 checkbox bounds(365, 270,100, 15), colour("yellow"), channel("balance"),  value(0), text("Balance"), fontColour:0("white"), fontColour:1("white")
-rslider bounds(490, 10, 50, 70), text("BW.Mult"),   channel("BWMlt"),  range(0.01, 4, 1, 0.4), textColour("white")
-rslider bounds(490, 80, 50, 70), text("Freq.Mult"), channel("FrqMlt"), range(0.25, 4, 1, 0.4), textColour("white")
-rslider bounds(490,150, 50, 70), text("Mix"),       channel("mix"),    range(0, 1.00, 1),      textColour("white")
-rslider bounds(490,220, 50, 70), text("Level"),     channel("level"),  range(0, 1.00, 1),      textColour("white")
+rslider bounds(490, 10, 70, 80), text("BW.Mult"),   channel("BWMlt"),  range(0.01, 4, 1, 0.4), $SLIDER_DESIGN
+rslider bounds(490,110, 70, 80), text("Freq.Mult"), channel("FrqMlt"), range(0.25, 4, 1, 0.4), $SLIDER_DESIGN
 
 image bounds(550,  0,600,295), colour(0,0,0,0)
-{
-nslider  bounds( 10, 10, 60, 30), text("Freq.1"), channel("f1"), range(0, 20000, 0, 1,1), active(0), textColour("white")
-nslider  bounds( 10, 50, 60, 30), text("dB.1"), channel("dB1"), range(-120, 0, 0, 1,1), active(0), textColour("white")
-nslider  bounds( 10, 90, 60, 30), text("BW.1"), channel("BW1"), range(0, 1000, 0, 1,1), active(0), textColour("white")
+ {
+ nslider  bounds( 10, 10, 60, 30), text("Freq.1"), channel("f1"), range(0, 20000, 0, 1,1), active(0), textColour("white")
+ nslider  bounds( 10, 50, 60, 30), text("dB.1"), channel("dB1"), range(-120, 0, 0, 1,1), active(0), textColour("white")
+ nslider  bounds( 10, 90, 60, 30), text("BW.1"), channel("BW1"), range(0, 1000, 0, 1,1), active(0), textColour("white")
 
-nslider  bounds( 80, 10, 60, 30), text("Freq.2"), channel("f2"), range(0, 20000, 0, 1,1), active(0), textColour("white")
-nslider  bounds( 80, 50, 60, 30), text("dB.2"), channel("dB2"), range(-120, 0, 0, 1,1), active(0), textColour("white")
-nslider  bounds( 80, 90, 60, 30), text("BW.2"), channel("BW2"), range(0, 1000, 0, 1,1), active(0), textColour("white")
+ nslider  bounds( 80, 10, 60, 30), text("Freq.2"), channel("f2"), range(0, 20000, 0, 1,1), active(0), textColour("white")
+ nslider  bounds( 80, 50, 60, 30), text("dB.2"), channel("dB2"), range(-120, 0, 0, 1,1), active(0), textColour("white")
+ nslider  bounds( 80, 90, 60, 30), text("BW.2"), channel("BW2"), range(0, 1000, 0, 1,1), active(0), textColour("white")
 
-nslider  bounds(150, 10, 60, 30), text("Freq.3"), channel("f3"), range(0, 20000, 0, 1,1), active(0), textColour("white")
-nslider  bounds(150, 50, 60, 30), text("dB.3"), channel("dB3"), range(-120, 0, 0, 1,1), active(0), textColour("white")
-nslider  bounds(150, 90, 60, 30), text("BW.3"), channel("BW3"), range(0, 1000, 0, 1,1), active(0), textColour("white")
+ nslider  bounds(150, 10, 60, 30), text("Freq.3"), channel("f3"), range(0, 20000, 0, 1,1), active(0), textColour("white")
+ nslider  bounds(150, 50, 60, 30), text("dB.3"), channel("dB3"), range(-120, 0, 0, 1,1), active(0), textColour("white")
+ nslider  bounds(150, 90, 60, 30), text("BW.3"), channel("BW3"), range(0, 1000, 0, 1,1), active(0), textColour("white")
 
-nslider  bounds( 50,150, 60, 30), text("Freq.4"), channel("f4"), range(0, 20000, 0, 1,1), active(0), textColour("white")
-nslider  bounds( 50,190, 60, 30), text("dB.4"), channel("dB4"), range(-120, 0, 0, 1,1), active(0), textColour("white")
-nslider  bounds( 50,230, 60, 30), text("BW.4"), channel("BW4"), range(0, 1000, 0, 1,1), active(0), textColour("white")
+ nslider  bounds( 50,150, 60, 30), text("Freq.4"), channel("f4"), range(0, 20000, 0, 1,1), active(0), textColour("white")
+ nslider  bounds( 50,190, 60, 30), text("dB.4"), channel("dB4"), range(-120, 0, 0, 1,1), active(0), textColour("white")
+ nslider  bounds( 50,230, 60, 30), text("BW.4"), channel("BW4"), range(0, 1000, 0, 1,1), active(0), textColour("white")
 
-nslider  bounds(120,150, 60, 30), text("Freq.5"), channel("f5"), range(0, 20000, 0, 1,1), active(0), textColour("white")
-nslider  bounds(120,190, 60, 30), text("dB.5"), channel("dB5"), range(-120, 0, 0, 1,1), active(0), textColour("white")
-nslider  bounds(120,230, 60, 30), text("BW.5"), channel("BW5"), range(0, 1000, 0, 1,1), active(0), textColour("white")
+ nslider  bounds(120,150, 60, 30), text("Freq.5"), channel("f5"), range(0, 20000, 0, 1,1), active(0), textColour("white")
+ nslider  bounds(120,190, 60, 30), text("dB.5"), channel("dB5"), range(-120, 0, 0, 1,1), active(0), textColour("white")
+ nslider  bounds(120,230, 60, 30), text("BW.5"), channel("BW5"), range(0, 1000, 0, 1,1), active(0), textColour("white")
 
-xypad bounds(220,  5,300,285), channel("x2", "y2"), rangeX(0, 1, 0), rangeY(0, 1, 0), text("X - Bandwidth | Y - Mix"), fontColour("white"), alpha(0.5)
-
+ xypad bounds(220,  5,300,285), channel("x2", "y2"), rangeX(0, 1, 0), rangeY(0, 1, 0), text("X - Bandwidth | Y - Mix"), fontColour("white"), alpha(0.5)
+ }
 }
 
-}
 
-label   bounds(1300, 292,120, 11), text("Iain McCurdy |2012|"), align("right"), fontColour("white")
-
-keyboard bounds(105,300,1210,80)
+keyboard bounds(  5,300,1210,80)
+label    bounds(  5,381,120, 12), text("Iain McCurdy |2012|"), align("right"), fontColour("white"), align("left")
+rslider  bounds(1240,300, 70, 80), text("Mix"),       channel("mix"),    range(0, 1.00, 1), $SLIDER_DESIGN
+rslider  bounds(1330,300, 70, 80), text("Level"),     channel("level"),  range(0, 1.00, 1), $SLIDER_DESIGN
 
 
 </Cabbage>

@@ -45,26 +45,27 @@ https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode */
 <Cabbage>
 form caption("CrossMorph"), size(541, 475), pluginId("CrMo"), colour(205,205,205), guiMode("queue")
 
+image      bounds(  0,  0,541,149), colour(0,0,0,0), outlineColour("black") outlineThickness(1)
+{
 label      bounds( 10,  5, 80, 16), text("FILE 1"), fontColour("black")
 filebutton bounds( 10, 25, 80, 18), text("Open File","Open File"), fontColour("white") channel("filename1"), shape("ellipse"), colour:0(50,50,100)
 button     bounds( 10, 50, 80, 18), text("PLAY","PLAY"), channel("Play1"), value(0), latched(1), fontColour:0(70,120,70), fontColour:1(205,255,205), colour:0(20,40,20), colour:1(0,150,0)
 rslider    bounds( -2, 72, 60, 70), channel("trans1"), range(-24, 24, 0,1,1), text("Transpose"), valueTextBox(1), textColour("Black"), fontColour("Black"), colour(150,150,170), colour(200,200,220), trackerColour(110,110,120)
 rslider    bounds( 43, 72, 60, 70), channel("speed1"), range(-1, 2, 1,0.50.1), text("Speed"), valueTextBox(1), textColour("Black"), fontColour("Black"), colour(150,150,170), colour(200,200,220), trackerColour(110,110,120)
 soundfiler bounds(100,  1,440,148), channel("beg","len"), channel("filer1"),  colour(0, 255, 255, 255), fontColour(160, 160, 160, 255)
+label      bounds( 82,  4,448,  9), text(""), align("left"), colour(0,0,0,0), fontColour(200,200,200), channel("stringbox1")
+}
 
-line       bounds(  0,150,540,   1), colour("DarkSlateGrey")
-
-label      bounds( 10,155, 80, 16), text("FILE 2"), fontColour("black")
-filebutton bounds( 10,175, 80, 18), text("Open File","Open File"), fontColour("white") channel("filename2"), shape("ellipse"), colour:0(50,50,100)
-button     bounds( 10,200, 80, 18), text("PLAY","PLAY"), channel("Play2"), value(0), latched(1), fontColour:0(70,120,70), fontColour:1(205,255,205), colour:0(20,40,20), colour:1(0,150,0)
-rslider    bounds( -2,222, 60, 70), channel("trans2"), range(-24, 24, 0,1,1), text("Transpose"), valueTextBox(1), textColour("Black"), fontColour("Black"), colour(150,150,170), colour(200,200,220), trackerColour(110,110,120)
-rslider    bounds( 43,222, 60, 70), channel("speed2"), range(-1, 2, 1,0.50.1), text("Speed"), valueTextBox(1), textColour("Black"), fontColour("Black"), colour(150,150,170), colour(200,200,220), trackerColour(110,110,120)
-soundfiler bounds(100,151,440,148), channel("beg","len"), channel("filer2"),  colour(0, 255, 255, 255), fontColour(160, 160, 160, 255)
-
-label      bounds( 82,  4,448,  9), text(""), align(left), colour(0,0,0,0), fontColour(200,200,200), channel("stringbox1")
-label      bounds( 82,154,448,  9), text(""), align(left), colour(0,0,0,0), fontColour(200,200,200), channel("stringbox2")
-
-line       bounds(  0,300,540,   1), colour("DarkSlateGrey")
+image      bounds(  0,155,541,149), colour(0,0,0,0), outlineColour("black") outlineThickness(1)
+{
+label      bounds( 10,  5, 80, 16), text("FILE 2"), fontColour("black")
+filebutton bounds( 10, 25, 80, 18), text("Open File","Open File"), fontColour("white") channel("filename2"), shape("ellipse"), colour:0(50,50,100)
+button     bounds( 10, 50, 80, 18), text("PLAY","PLAY"), channel("Play2"), value(0), latched(1), fontColour:0(70,120,70), fontColour:1(205,255,205), colour:0(20,40,20), colour:1(0,150,0)
+rslider    bounds( -2, 72, 60, 70), channel("trans2"), range(-24, 24, 0,1,1), text("Transpose"), valueTextBox(1), textColour("Black"), fontColour("Black"), colour(150,150,170), colour(200,200,220), trackerColour(110,110,120)
+rslider    bounds( 43, 72, 60, 70), channel("speed2"), range(-1, 2, 1,0.50.1), text("Speed"), valueTextBox(1), textColour("Black"), fontColour("Black"), colour(150,150,170), colour(200,200,220), trackerColour(110,110,120)
+soundfiler bounds(100,  1,440,148), channel("beg","len"), channel("filer2"),  colour(0, 255, 255, 255), fontColour(160, 160, 160, 255)
+label      bounds( 82,  4,448,  9), text(""), align("left"), colour(0,0,0,0), fontColour(200,200,200), channel("stringbox2")
+}
 
 image bounds(0,305,540,300) colour(0,0,0,0) 
 {
@@ -83,16 +84,20 @@ combobox bounds(10, 53, 60, 20), text("2","4","8","16","32","64"), channel("Over
   }
 }
 
-line       bounds(  0,390,540,   1), colour("DarkSlateGrey")
+;line       bounds(  0,390,540,   1), colour("DarkSlateGrey")
 
-label      bounds( 10, 400, 80, 13), text("Method"), fontColour(138, 54, 15)
-combobox   bounds( 10, 415, 80, 20), text("pvsmorph","pvscross"), channel("Method"), value(1)
+image      bounds(  0,390,540, 85) colour(0,0,0,0), outlineColour("black") outlineThickness(1)
+{
+label      bounds( 10, 10, 80, 13), text("Method"), fontColour(138, 54, 15)
+combobox   bounds( 10, 25, 80, 20), text("pvsmorph","pvscross"), channel("Method"), value(1)
 
-button     bounds(170,420,100, 25), channel("Swap"), text("SWAP FILES"), latched(1), colour:1("yellow"), fontColour:1("Black")
-rslider    bounds(100,400, 60, 70), channel("level"), range(0, 1, 1), text("Level"), valueTextBox(1), textColour("Black"), fontColour("Black"), colour(150,150,170), colour(200,200,220), trackerColour(110,110,120)
-checkbox   bounds(280,420, 75, 25), channel("record"), text("Record"), colour("red"), fontColour:0("Black"), fontColour:1("Black")
+button     bounds(170, 30,100, 25), channel("Swap"), text("SWAP FILES"), latched(1), colour:1("yellow"), fontColour:1("Black")
+rslider    bounds(100, 10, 60, 70), channel("level"), range(0, 1, 1), text("Level"), valueTextBox(1), textColour("Black"), fontColour("Black"), colour(150,150,170), colour(200,200,220), trackerColour(110,110,120)
+checkbox   bounds(280, 30, 75, 25), channel("record"), text("Record"), colour("red"), fontColour:0("Black"), fontColour:1("Black")
 
-label      bounds(  3,463,120, 11), text("Iain McCurdy |2023|"), align("left"), fontColour("DarkGrey")
+label      bounds(  3, 73,120, 11), text("Iain McCurdy |2023|"), align("left"), fontColour("DarkGrey")
+}
+
 </Cabbage>
 
 <CsoundSynthesizer>

@@ -37,6 +37,13 @@ https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode */
 
 ; Amp Drop Off -   this scales the rate of amplitude attenuation as a result of distance at all speakers.
 
+; A later-reflection reverb is included. This is unaffected by distance and filter drop-off.
+; Four controls for this parallel reverb are provided:
+; Rvb. Send    -   send level
+; Rvb. Size    -   size/length of the reverb 
+; Rvb. Damp    -   hig-frequency damping cutoff. High frequencies are increasingly damped as the reverbant echoes circulate within the algorithm.
+; Lo-Cut       -   cutoff frequency of high-pass filter that is applied to the reverb input signal
+
 <Cabbage>
 form caption("Haas Tilt Stereo") size(760,470), pluginId("Spt8"), guiMode("queue"), colour(40,40,40)
 
@@ -79,19 +86,23 @@ nslider  bounds(185, 25, 70, 35), channel("X2"), range(-1,1, 0.5,1,.01), text("S
 nslider  bounds(265, 25, 70, 35), channel("Y2"), range(-1,1, 0.5,1,.01), text("Spk.2 Y")
 }
 
-image    bounds(410,165,390,210), colour(0,0,0,0)
+image    bounds(410,160,390,240), colour(0,0,0,0)
 {
 label    bounds(  0,  0, 80, 14), text("INPUT")
 combobox bounds(  0, 15, 80, 20), channel("MonoStereo"), items("Mono","Stereo","Beeper"), value(1) 
 hslider  bounds(  0, 55,340, 20), channel("Smoothing"), text("Smoothing"), range(0.01,0.3,0.05,0.5,0.0001), valueTextBox(1)
 hslider  bounds(  0, 85,340, 20), channel("DelRange"), text("Delay Range"), range(1, 60,10,1,0.1), valueTextBox(1)
 hslider  bounds(  0,115,340, 20), channel("AmpDropOff"), text("Amp.Drop-Off"), range(-3, 24,12,1,0.1), valueTextBox(1)
-checkbox bounds(  0,155,100, 15), channel("FilterOnOff"), value(1), text("Filter On/Off")
-hslider  bounds(  0,185,340, 20), channel("FilterDropOff"), text("Filter Drop-Off"), range(0, 8, 4, 1, 0.01), valueTextBox(1)
+checkbox bounds(  5,150,100, 15), channel("FilterOnOff"), value(1), text("Filter On/Off")
+hslider  bounds(  5,170,340, 20), channel("FilterDropOff"), text("Filter Drop-Off"), range(0, 8, 4, 1, 0.01), valueTextBox(1)
+hslider  bounds(  5,195,170, 20), channel("RvbSend"), text("Rvb. Send"), range(0, 1, 0, 0.5), valueTextBox(0), popupText(0)
+hslider  bounds(175,195,170, 20), channel("RvbSize"), text("Rvb. Size"), range(0.3,0.99, 0.8, 0.5), valueTextBox(0), popupText(0)
+hslider  bounds(  5,220,170, 20), channel("RvbDamp"), text("Rvb. Damp"), range(200,18000, 12000, 0.5), valueTextBox(0), popupText(0)
+hslider  bounds(175,220,170, 20), channel("RvbLoCut"), text("Lo-Cut"), range(20, 8000, 20, 0.5), valueTextBox(0), popupText(0)
 }
 
 ; meters
-image   bounds(500,170, 35, 42), colour(0,0,0,0)
+image   bounds(505,170, 35, 42), colour(0,0,0,0)
 {
 vmeter  bounds(  0,  0, 10, 30) channel("VUMeter1") value(0) overlayColour(0, 0, 0, 255) meterColour:0(255, 255, 0) meterColour:1(255, 103, 171) meterColour:2(250,250, 0) outlineThickness(0)
 vmeter  bounds( 15,  0, 10, 30) channel("VUMeter2") value(0) overlayColour(0, 0, 0, 255) meterColour:0(255, 255, 0) meterColour:1(255, 103, 171) meterColour:2(250,250, 0) outlineThickness(0)
@@ -108,7 +119,7 @@ image bounds( 10,410,800,200) colour(0,0,0,0)
 filebutton bounds(  0,  0, 70, 20), text("Open File","Open File"), fontColour("white") channel("filename")
 button     bounds(  0, 30, 70, 20), text("PLAY","PLAY"), fontColour("white") channel("Play"), latched(1), colour:0(10,55,10), colour:1(70,200,70)
 soundfiler bounds( 80,  0,660, 50), channel("beg","len"), channel("filer1"),  colour(0, 255, 255, 255), fontColour(160, 160, 160, 255)
-label      bounds( 80,  3,690, 14), text(""), align(left), colour(0,0,0,0), fontColour(200,200,200), channel("FileName")
+label      bounds( 80,  3,690, 14), text(""), align("left"), colour(0,0,0,0), fontColour(200,200,200), channel("FileName")
 }
 
 </Cabbage>
@@ -209,15 +220,26 @@ instr 1
  a1     vdelay3 aL, a(kDel1), iMaxDel
  a2     vdelay3 aR, a(kDel2), iMaxDel
  
+ ; reverb send
+ kRvbSend    cabbageGetValue "RvbSend"
+ kRvbSize    cabbageGetValue "RvbSize"
+ kRvbDamp    cabbageGetValue "RvbDamp"
+ kRvbLoCut   cabbageGetValue "RvbLoCut"
+; aRvbIn1     buthp           a1, kRvbLoCut
+; aRvbIn2     buthp           a2, kRvbLoCut
+ aRvbIn1     clfilt          a1, kRvbLoCut, 1, 4
+ aRvbIn2     clfilt          a2, kRvbLoCut, 1, 4
+ aRvbL,aRvbR reverbsc        aRvbIn1 * kRvbSend, aRvbIn2 * kRvbSend, kRvbSize, kRvbDamp
+             outs            aRvbL,aRvbR
+             
+ ; amp drop-off
  kAmpDropOff cabbageGetValue "AmpDropOff"
- kAmp1     =     -kAmpDropOff * (kDist1*2)
- kAmp2     =     -kAmpDropOff * (kDist2*2)
-
- cabbageSetValue "Amp1",kAmp1,changed:k(kAmp1)
- cabbageSetValue "Amp2",kAmp2,changed:k(kAmp2)
-
- a1     *=     ampdbfs(kAmp1)
- a2     *=     ampdbfs(kAmp2)
+ kAmp1       =               -kAmpDropOff * (kDist1*2)
+ kAmp2       =               -kAmpDropOff * (kDist2*2)
+             cabbageSetValue "Amp1",kAmp1,changed:k(kAmp1)
+             cabbageSetValue "Amp2",kAmp2,changed:k(kAmp2)
+ a1          *=              ampdbfs(kAmp1)
+ a2          *=              ampdbfs(kAmp2)
 
 kFilterOnOff   cabbageGetValue "FilterOnOff"
 kFilterDropOff cabbageGetValue "FilterDropOff"
@@ -225,7 +247,7 @@ if kFilterOnOff==1 then
  a1     tone   a1, cpsoct( limit:k( (14 - (kDist1 * kFilterDropOff)), 4, 14))
  a2     tone   a2, cpsoct( limit:k( (14 - (kDist2 * kFilterDropOff)), 4, 14))
 endif
-a2l,a2 hilbert a2
+;a2l,a2 hilbert a2
         outs    a1, a2
 ;        outo    a1, a2, a3, a4, a5, a6, a7, a8
 

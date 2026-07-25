@@ -79,49 +79,49 @@ image    bounds(  0,  0,100,100), colour(0,0,0,0), outlineThickness(1), corners(
 {
 label    bounds(  0,  5,100, 25), text("1")
 checkbox bounds( 15, 40, 70, 12), channel("OnOff1"), text("On/Off"), value(1), shape("ellipse")
-nslider  bounds( 15, 60, 70, 30), channel("azim1"), text("Azim.1"), range(-360,360,-45)
+nslider  bounds( 15, 60, 70, 30), channel("azim1"), text("Azim.1"), range(-360,360,-22.5)
 }
+
 image    bounds(110,  0,100,100), colour(0,0,0,0), outlineThickness(1), corners(5)
 {
 label    bounds(  0,  5,100, 25), text("2")
 checkbox bounds( 15, 40, 70, 12), channel("OnOff2"), text("On/Off"), value(1), shape("ellipse")
-nslider  bounds( 15, 60, 70, 30), channel("azim2"), text("Azim.2"), range(-360,360,45)
+nslider  bounds( 15, 60, 70, 30), channel("azim2"), text("Azim.2"), range(-360,360,22.5)
 }
 image    bounds(220,  0,100,100), colour(0,0,0,0), outlineThickness(1), corners(5)
 {
 label    bounds(  0,  5,100, 25), text("3")
 checkbox bounds( 15, 40, 70, 12), channel("OnOff3"), text("On/Off"), value(1), shape("ellipse")
-nslider  bounds( 15, 60, 70, 30), channel("azim3"), text("Azim.3"), range(-360,360,-0)
+nslider  bounds( 15, 60, 70, 30), channel("azim3"), text("Azim.3"), range(-360,360,-67.5)
 }
 image    bounds(330,  0,100,100), colour(0,0,0,0), outlineThickness(1), corners(5)
 {
 label    bounds(  0,  5,100, 25), text("4")
-checkbox bounds( 15, 40, 70, 12), channel("OnOff4"), text("On/Off"), value(0), shape("ellipse")
+checkbox bounds( 15, 40, 70, 12), channel("OnOff4"), text("On/Off"), value(1), shape("ellipse")
 nslider  bounds( 15, 60, 70, 30), channel("azim4"), text("Azim.4"), range(-360,360,67.5)
 }
-
 image    bounds(  0,110,100,100), colour(0,0,0,0), outlineThickness(1), corners(5)
 {
 label    bounds(  0,  5,100, 25), text("5")
 checkbox bounds( 15, 40, 70, 12), channel("OnOff5"), text("On/Off"), value(1), shape("ellipse")
-nslider  bounds( 15, 60, 70, 30), channel("azim5"), text("Azim.5"), range(-360,360,225)
+nslider  bounds( 15, 60, 70, 30), channel("azim5"), text("Azim.5"), range(-360,360,-112.5)
 }
 image    bounds(110,110,100,100), colour(0,0,0,0), outlineThickness(1), corners(5)
 {
 label    bounds(  0,  5,100, 25), text("6")
 checkbox bounds( 15, 40, 70, 12), channel("OnOff6"), text("On/Off"), value(1), shape("ellipse")
-nslider  bounds( 15, 60, 70, 30), channel("azim6"), text("Azim.6"), range(-360,360,135)
+nslider  bounds( 15, 60, 70, 30), channel("azim6"), text("Azim.6"), range(-360,360,112.5)
 }
 image    bounds(220,110,100,100), colour(0,0,0,0), outlineThickness(1), corners(5)
 {
 label    bounds(  0,  5,100, 25), text("7")
-checkbox bounds( 15, 40, 70, 12), channel("OnOff7"), text("On/Off"), value(0), shape("ellipse")
+checkbox bounds( 15, 40, 70, 12), channel("OnOff7"), text("On/Off"), value(1), shape("ellipse")
 nslider  bounds( 15, 60, 70, 30), channel("azim7"), text("Azim.7"), range(-360,360,-157.5)
 }
 image    bounds(330,110,100,100), colour(0,0,0,0), outlineThickness(1), corners(5)
 {
 label    bounds(  0,  5,100, 25), text("8")
-checkbox bounds( 15, 40, 70, 12), channel("OnOff8"), text("On/Off"), value(0), shape("ellipse")
+checkbox bounds( 15, 40, 70, 12), channel("OnOff8"), text("On/Off"), value(1), shape("ellipse")
 nslider  bounds( 15, 60, 70, 30), channel("azim8"), text("Azim.8"), range(-360,360,157.5)
 }
 
@@ -134,11 +134,11 @@ hslider  bounds(  0,250,510, 15), channel("RotateStereo"), text("Rotate Stereo")
 hslider  bounds(  0,280,510, 15), channel("StereoWidth"), text("Stereo Width"), range(-720,720,90,1,1), valueTextBox(1)
 
 label    bounds(  0,310, 90, 14), text("LFE Channel"), align("centre")
-combobox bounds(  0,325, 90, 20), channel("LFEChan"), items("1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16"), value(4), align("centre")
+combobox bounds(  0,325, 90, 20), channel("LFEChan"), items("1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16"), value(12), align("centre")
 checkbox bounds(  0,350, 90, 12), channel("OnOffLFE"), text("On/Off"), value(1), shape("ellipse")
 
 label    bounds(  0,370, 90, 14), text("Preset"), align("centre")
-combobox bounds(  0,385, 90, 20), channel("Preset"), items("5.1 Quad","5.1 Standard","7.1 Quad","7.1 Standard","Quad","Oct.Pairs","Acousmonium","Oct. Ring 1",,"Oct. Ring 2","5.1 Equi."), value(1), align("centre")
+combobox bounds(  0,385, 90, 20), channel("Preset"), items("5.1 Quad","5.1 Standard","7.1 Quad","7.1 Standard","Quad","Oct.Pairs","Acousmonium","Oct. Ring 1",,"Oct. Ring 2","5.1 Equi."), value(6), align("centre")
 
 
 ; meters
@@ -200,23 +200,34 @@ label      bounds(  5,625,690, 12), text("Iain McCurdy |2024|"), align("left")
 
 <CsInstruments>
 ksmps  = 64
-nchnls = 8
+nchnls = 16
 0dbfs  = 1
 
 gaFile1,gaFile2   init                0
 
+
+
+
+
+
+
+
+
+
+
+
 ; presets
 ;                                                 visible          az.1   2     3      4      5       6      7       8        on/off           LFEChan LFEonOff
-i_                ftgen               1,0,-26,-2, 1,1,1,0,1,1,0,0, -45,   45,   0,     0,     135,    225,   0,      0,       1,1,1,0,1,1,0,0, 4,      1 ; 5.1 quad
-i_                ftgen               2,0,-26,-2, 1,1,1,0,1,1,0,0, -30,   30,   0,     0,    -120,    120,   0,      0,       1,1,1,0,1,1,0,0, 4,      1 ; 5.1 standard
-i_                ftgen               3,0,-26,-2, 1,1,1,0,1,1,1,1, -45,   45,   0,     0,     -90,    90,    -135,   135,     1,1,1,0,1,1,1,1, 4,      1 ; 7.1 quad
-i_                ftgen               4,0,-26,-2, 1,1,1,0,1,1,1,1, -30,   30,   0,     0,     -90,    90,    -150,   150,     1,1,1,0,1,1,1,1, 4,      1 ; 7.1 standard
-i_                ftgen               5,0,-26,-2, 1,1,1,1,0,0,0,0, -45,   45,-135,   135,     -90,    90,    -145,   145,     1,1,1,1,0,0,0,0, 4,      0 ; quad
-i_                ftgen               6,0,-26,-2, 1,1,1,1,1,1,1,1, -22.5, 22.5, -67.5, 67.5,  -112.5, 112.5, -157.5, 157.5,   1,1,1,1,1,1,1,1, 12,     1 ; octophonic pairs
-i_                ftgen               7,0,-26,-2, 1,1,1,1,1,1,1,1, -15,   15,   -45,   45,    -90,    90,    -135,   135,     1,1,1,1,1,1,1,1, 12,     1 ; acousmonium
-i_                ftgen               8,0,-26,-2, 1,1,1,1,1,1,1,1,   0,   45,   90,    135,   180,    225,   270,    315,     1,1,1,1,1,1,1,1, 12,     1 ; oct ring 1
-i_                ftgen               9,0,-26,-2, 1,1,1,1,1,1,1,1, -22.5, 22.5, 67.5,  112.5, 157.5,  202.5, 247.5,  292.500, 1,1,1,1,1,1,1,1, 12,     1 ; oct ring 2
-i_                ftgen               10,0,-26,-2,1,1,1,0,1,1,0,0, -72,   72,   0,     0,    -144,    144,   0,      0,       1,1,1,0,1,1,0,0, 4,      1 ; 5.1 equi.
+i5_1Quad          ftgen               1,0,-26,-2, 1,1,1,0,1,1,0,0, -45,   45,   0,     0,     135,    225,   0,      0,       1,1,1,0,1,1,0,0, 4,      1 ; 5.1 quad
+i5_1Standard      ftgen               2,0,-26,-2, 1,1,1,0,1,1,0,0, -30,   30,   0,     0,    -120,    120,   0,      0,       1,1,1,0,1,1,0,0, 4,      1 ; 5.1 standard
+i7_1Quad          ftgen               3,0,-26,-2, 1,1,1,0,1,1,1,1, -45,   45,   0,     0,     -90,    90,    -135,   135,     1,1,1,0,1,1,1,1, 4,      1 ; 7.1 quad
+i7_1Standard      ftgen               4,0,-26,-2, 1,1,1,0,1,1,1,1, -30,   30,   0,     0,     -90,    90,    -150,   150,     1,1,1,0,1,1,1,1, 4,      1 ; 7.1 standard
+iQuad             ftgen               5,0,-26,-2, 1,1,1,1,0,0,0,0, -45,   45,-135,   135,     -90,    90,    -145,   145,     1,1,1,1,0,0,0,0, 4,      0 ; quad
+iOctPairs         ftgen               6,0,-26,-2, 1,1,1,1,1,1,1,1, -22.5, 22.5, -67.5, 67.5,  -112.5, 112.5, -157.5, 157.5,   1,1,1,1,1,1,1,1, 12,     1 ; octophonic pairs
+iAcousmonium      ftgen               7,0,-26,-2, 1,1,1,1,1,1,1,1, -15,   15,   -45,   45,    -90,    90,    -135,   135,     1,1,1,1,1,1,1,1, 12,     1 ; acousmonium
+iOctRing1         ftgen               8,0,-26,-2, 1,1,1,1,1,1,1,1,   0,   45,   90,    135,   180,    225,   270,    315,     1,1,1,1,1,1,1,1, 12,     1 ; oct ring 1
+iOctRing2         ftgen               9,0,-26,-2, 1,1,1,1,1,1,1,1, -22.5, 22.5, 67.5,  112.5, 157.5,  202.5, 247.5,  292.500, 1,1,1,1,1,1,1,1, 12,     1 ; oct ring 2
+i5_1Equi          ftgen               10,0,-26,-2,1,1,1,0,1,1,0,0, -72,   72,   0,     0,    -144,    144,   0,      0,       1,1,1,0,1,1,0,0, 4,      1 ; 5.1 equi.
 
 instr 1
  ; bug workaround, 0 degrees doesn't show
@@ -296,6 +307,7 @@ endif
 
 ; rotate axes
 kRotateStereo,kT1 cabbageGetValue     "RotateStereo"
+kRotateStereo     port                kRotateStereo, 0.05
 kStereoWidth,kT2  cabbageGetValue     "StereoWidth"
 kaz1              =                   kRotateStereo - (kStereoWidth*0.5)
 kaz2              =                   kRotateStereo + (kStereoWidth*0.5)
@@ -314,11 +326,17 @@ REBUILD_SPEAKER_DEF:
 iSpkrs[]           fillarray           i(kazim1), i(kazim2), i(kazim3), i(kazim4), i(kazim5), i(kazim6), i(kazim7), i(kazim8)
                    vbaplsinit          idim, lenarray:i(iSpkrs), iSpkrs
 
+; INPUT
+if gkPlay==0 then
+ gaFile1 inch 1
+ gaFile2 inch 2
+endif ; otherwise will be file playback
+
+
 ; CALCULATE OUTPUTS USING vbap
 kel               =                   0
 kspread           cabbageGetValue     "spread"        ; spill between speakers
 
-;kRotateStereo       port                kRotateStereo, 0.05
 
 ; channel 1
 a1_1,a1_2,a1_3,a1_4,a1_5,a1_6,a1_7,a1_8 vbap gaFile1, kaz1 , kel, kspread

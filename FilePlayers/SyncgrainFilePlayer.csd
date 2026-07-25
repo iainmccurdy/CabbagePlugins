@@ -72,7 +72,7 @@ rslider    bounds(370, 15, 90, 90), channel("transpose"), range(-48, 48, 0,1,0.0
 rslider    bounds(440, 15, 90, 90), channel("TransposeOS"), range(0, 36.00, 0),        text("Trans. OS"),  $SLIDER_DESIGN
 rslider    bounds(510, 15, 90, 90), channel("speed"),     range( -2.00, 2.00, 1),      text("Speed"),     $SLIDER_DESIGN
 label      bounds(600, 12, 74, 10), text("S h a p e"), fontColour("white"), align("centre")
-combobox   bounds(600, 22, 74, 18), channel("shape"), items("Hanning", "Half Sine", "Triangle", "Perc.1", "Perc.2", "Gate", "Rev.Perc.1", "Rev.Perc.2", "Tukey"), value(1),fontColour("white")
+combobox   bounds(600, 22, 74, 18), channel("shape"), items("Hanning", "Half Sine", "Triangle", "Perc.1", "Perc.2", "Gate", "Rev.Perc.1", "Rev.Perc.2", "Tukey", "Soft Perc."), value(1),fontColour("white")
 gentable   bounds(600, 42, 74, 25), tableNumber(1001), channel("WindowTab"), ampRange(0,1,1001), fill(0)
 checkbox   bounds(600, 75,100, 15), channel("freeze"), text("Freeze"), colour("LightBlue"), fontColour:0("white"), fontColour:1("white")
 
@@ -95,8 +95,10 @@ keyboard   bounds(  5,115,1070, 80)
 xypad      bounds(697,  5,243,175), channel("X","Y"), text("X - Speed | Y - Transpose"), fontColour(0,0,0,0)
 checkbox   bounds(945, 10,130, 15), channel("XtoSpeed"), text("X to Speed"), colour("Yellow"), fontColour:0("white"), fontColour:1("white"), value(0)
 checkbox   bounds(945, 35,130, 15), channel("XtoDens"), text("X to Density"), colour("Yellow"), fontColour:0("white"), fontColour:1("white"), value(0)
-checkbox   bounds(945, 70,130, 15), channel("YtoTrans"), text("Y to Transposition"), colour("Yellow"), fontColour:0("white"), fontColour:1("white"), value(0)
-checkbox   bounds(945, 95,130, 15), channel("YtoFilters"), text("Y to Filters"), colour("Yellow"), fontColour:0("white"), fontColour:1("white"), value(0)
+
+checkbox   bounds(945, 80,130, 15), channel("YtoTrans"), text("Y to Transposition"), colour("Yellow"), fontColour:0("white"), fontColour:1("white"), value(0)
+checkbox   bounds(945,105,130, 15), channel("YtoFilters"), text("Y to Filters"), colour("Yellow"), fontColour:0("white"), fontColour:1("white"), value(0)
+checkbox   bounds(945,130,130, 15), channel("YtoDens"), text("Y to Density"), colour("Yellow"), fontColour:0("white"), fontColour:1("white"), value(0)
 
 label    bounds(  5,377,120, 12), text("Iain McCurdy |2014|"), align("left"), fontColour("Silver")
 
@@ -160,6 +162,9 @@ endop
 
 giTukey  ftgen        0, 0, 131072, 10, 0
          TukeyWindow  giTukey, ftlen(giTukey), 0.1
+
+giwfn9    ftgen    0,  0, 131072, 16,    0, 131072*.1, -4, 1, 131072*0.9, -4, 0 ; SOFT PERCUSSIVE
+
 giWindowTab ftgen    1001,  0, 128,  20,   2, 1                     ; display table
 
 instr    1
@@ -178,18 +183,26 @@ instr    1
  
   gkXtoSpeed       cabbageGetValue     "XtoSpeed"
   gkXtoDens        cabbageGetValue     "XtoDens"
+                   cabbageSetValue     "YtoDens", 0, trigger:k(gkXtoDens,0.5,0)
   gkYtoTrans       cabbageGetValue     "YtoTrans"
   gkYtoFilters     cabbageGetValue     "YtoFilters"
   gkXtoSpeed       init                0
   gkYtoTrans       init                0
   gkYtoFilters     init                0
+  gkYtoDens        cabbageGetValue     "YtoDens"
+                   cabbageSetValue     "XtoDens", 0, trigger:k(gkYtoDens,0.5,0)
 
  kX,kT             cabbageGetValue     "X"
                    cabbageSetValue     "speed", kX*4 - 2, kT*gkXtoSpeed
                    cabbageSetValue     "density", kX^3*395.5 + 0.5, kT*gkXtoDens
  kY,kT             cabbageGetValue     "Y"
                    cabbageSetValue     "transpose", kY*96 - 48, kT*gkYtoTrans
+                   cabbageSetValue     "density", kY^3*395.5 + 0.5, kT*gkYtoDens
+
                 
+;checkbox   bounds(945,130,130, 15), channel("YtoDens"), text("Y to Density"), colour("Yellow"), fontColour:0("white"), fontColour:1("white"), value(0)
+
+                                                                
   ; filter parameters
   kLPF_CF          scale               cabbageGetValue:k("Y")*2,14,4
   kLPF_CF          limit               kLPF_CF, 4, 14

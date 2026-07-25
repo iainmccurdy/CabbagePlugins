@@ -5,41 +5,57 @@ NonCommercial - You may not use the material for commercial purposes.
 ShareAlike - If you remix, transform, or build upon the material, you must distribute your contributions under the same license as the original.
 https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode */
 
-; loscil_loscil3FilePlayer.csd
-; Written by Iain McCurdy, 2014
+; LoopingOscillator.csd
+; Written by Iain McCurdy, 2014, 2026
 ; 
-; Load a user selected sound file into a GEN 01 function table and plays it back using loscil3. 
-; This file player is best suited for polyphonic playback and is less well suited for the playback of very long sound files .
+; Loads a user selected sound file (mono or stereo) into a GEN01 function table (RAM) and plays it back using loscilx. 
+; This file player is suited well for polyphonic playback with many overlapping notes.
+;  It is less well suited for the playback of very long sound files for which diskin is recommended.
 ; 
 ; The sound file can be played back using the Play/Stop button (and the 'Transpose' / 'Speed' buttons to implement pitch/speed change)
 ;  or it can be played back using the MIDI keyboard.
 ; 
-; The loop points can be set either by using the loop 'Start' and 'End' sliders or by clicking and dragging on the waveform view -
-;  - loscil will take the values from the last control input moved.
+; The loop points are set using the white slider above and below the waveform viewer. The upper slider is the loop start
+;  point and the lower one is the loop end point.
+; The loop start point should always be before the end point otherwise the loop will not play.
+; The light green slider controls the start point before looping begins. It should be before both loop points otherwise
+;  the loop will not play.
+
+; The loscilx opcode is used which offers superior quality for interpolation when extremely low playback speeds are used.
+;  Additionally is can reduce aliasing artefacts when samples are played very fast.
+; The extent to which these improvements will be applied is set using the 'Quality' control (the 'Window' number box
+;   indicates the actual window size used by the opcode). Increasing 'Quality' comes at a CPU cost so should be 
+;   balanced against the polyphony required).
 
 <Cabbage>
-form caption("loscil/loscil3 File Player") size(860,385), colour( 70,  75,  70) pluginId("Losc"), guiMode("queue")
+form caption("Looping Oscillator") size(860,440), colour( 70,  75,  70) pluginId("Losc"), guiMode("queue")
 
 #define SLIDER_STYLE colour( 50, 70, 50), textColour("white"), valueTextBox(1), fontColour("white")
+#define SLIDER_STYLE2 colour( 50, 70, 50), textColour("white"), valueTextBox(0), fontColour("white"), colour("white")
+#define SLIDER_STYLE3 colour( 50, 70, 50), textColour("white"), valueTextBox(0), fontColour("white"), colour("lime")
 
-soundfiler bounds(  5,  5,850,175), channel("beg","len"),  colour(0, 255, 255, 255), fontColour(160, 160, 160, 255), 
+soundfiler bounds(  5, 15,850,175), channel("beg","len"),  colour(0, 255, 255, 255), fontColour(160, 160, 160, 255), 
+hslider    bounds(  0,  0,860, 20), channel("LoopStart"), range(0, 1, 0), popupText(0), $SLIDER_STYLE2
+hslider    bounds(  0,190,860, 20), channel("LoopEnd"), range(0, 1, 1), popupText(0), $SLIDER_STYLE2
+hslider    bounds(  0,210,860, 20), channel("Start"), range(0, 1, 0), popupText(0), $SLIDER_STYLE3
+image      bounds(  5, 15,  1,175), alpha(0.5), channel("LoopRegion"), colour(200,200,255)
+image      bounds(  5, 15,  1,175), alpha(0.5), channel("StartWiper"), colour("lime")
 
-image      bounds(  5,  5,  1,175), alpha(0.5), channel("LoopRegion"), colour(200,200,255)
-
-image      bounds(  0,180,860,220), colour(0,0,0,0), outlineColour("white"), line(2), shape("sharp"), plant("controls")
+image      bounds(  0,230,860,220), colour(0,0,0,0), outlineColour("white"), line(2), shape("sharp"), plant("controls")
 {
-filebutton bounds(  5, 10, 80, 25), text("Open File","Open File"), fontColour("white") channel("filename"), shape("ellipse")
-checkbox   bounds(  5, 40, 95, 25), channel("PlayStop"), text("Play/Stop"), colour("yellow"), fontColour:0("white"), fontColour:1("white")
+filebutton bounds( 10, 30, 80, 25), text("Open File","Open File"), fontColour("white") channel("filename"), corners(5)
+image      bounds(  9, 69, 82, 27), colour("black"), corners(5)
+button     bounds( 10, 70, 80, 25), channel("PlayStop"), text("Play","Play"), colour:0( 30,80,30), colour:1(150,255,150), fontColour:0("white"), fontColour:1(0,60,0), corners(5)
 
-label      bounds(  5, 72, 80, 12), text("Opcode"), fontColour("white"), align("centre")
-combobox   bounds(  5, 85, 80, 20), channel("opcode"), items("loscil", "loscil3"), value(1), fontColour("white")
+label      bounds(110, 40, 90, 13), text("Looping Mode"), fontColour("white"), align("centre")
+combobox   bounds(110, 55, 90, 20), channel("loop"), items("None", "Forward", "Fwd./Bwd."), value(1), fontColour("white")
+rslider    bounds(195, 20, 90, 90), channel("Quality"), range(0, 10, 4,1,1),   text("Quality"), $SLIDER_STYLE
+nslider    bounds(275, 40, 60, 35), channel("Window"), range(1, 1024, 16,1,1),   text("Window"), $SLIDER_STYLE
+image      bounds(274, 40, 60, 40), alpha(0.2), outlineThickness(1), corners(5), outlineColour("black")
 
-label      bounds(110, 12, 80, 12), text("Looping Mode"), fontColour("white"), align("centre")
-combobox   bounds(110, 25, 80, 20), channel("loop"), items("None", "Forward", "Fwd./Bwd."), value(1), fontColour("white")
-
-label      bounds(250,  4, 43,  8), text("L   O   O   P"), fontColour("white")
-rslider    bounds(190, 20, 90, 90), channel("LoopStart"), range(0, 1, 0), text("Start"), $SLIDER_STYLE
-rslider    bounds(260, 20, 90, 90), channel("LoopEnd"),   range(0, 1, 0), text("End"), $SLIDER_STYLE
+;label      bounds(250,  4, 43,  8), text("L   O   O   P"), fontColour("white")
+;rslider    bounds(190, 20, 90, 90), channel("LoopStart"), range(0, 1, 0), text("Start"), $SLIDER_STYLE
+;rslider    bounds(260, 20, 90, 90), channel("LoopEnd"),   range(0, 1, 0), text("End"), $SLIDER_STYLE
 
 line       bounds(340, 10,  2, 95), colour("Grey")
 
@@ -60,11 +76,11 @@ rslider    bounds(630, 20, 90, 90), channel("MidiRef"),   range(0,127,60, 1, 0.0
 button     bounds(715, 50, 70, 25), channel("Detect"), text("Detect","Detect"), corners(5), colour:0(100,100,130), colour:1(100,100,130), latched(0)
 rslider    bounds(780, 20, 90, 90), channel("level"),     range(  0,  3.00, 1, 0.5), text("Level"), $SLIDER_STYLE
 
-keyboard bounds(5,115,850,75)
+keyboard bounds(5,120,850,75)
 }
 
-label    bounds(  5,372,120, 12), text("Iain McCurdy |2014|"), align("left"), fontColour("Silver")
-
+label    bounds(  5,427,120, 12), text("Iain McCurdy |2014|"), align("left"), fontColour("Silver")
+ 
 </Cabbage>
 
 <CsoundSynthesizer>
@@ -80,32 +96,32 @@ ksmps  = 64
 nchnls = 2
 0dbfs  = 1
 
-                massign               0, 3
+                massign               0, 2
 gichans         init                  0
 giReady         init                  0
 gSfilepath      init                  ""
 gkTabLen        init                  2
 
-instr    1
+instr    1 ; always on
  gkloop         cabbageGetValue       "loop"
  kLoopStart     cabbageGetValue       "LoopStart"
  kLoopEnd       cabbageGetValue       "LoopEnd"
+ gkStart        cabbageGetValue       "Start"
  kbeg           cabbageGetValue       "beg"                      ; click and drag
  klen           cabbageGetValue       "len"
- gkopcode       cabbageGetValue       "opcode"
  
  ; loop region graphic
  iBounds[]      cabbageGet            "beg", "bounds"
                 cabbageSet            changed:k(kLoopStart,kLoopEnd), "LoopRegion", "bounds", iBounds[0] + (iBounds[2] * kLoopStart),   iBounds[1], (iBounds[2] * (kLoopEnd-kLoopStart)),   iBounds[3]
-
+                cabbageSet            changed:k(gkStart), "StartWiper", "bounds", iBounds[0] + gkStart*iBounds[2], iBounds[1], 1, iBounds[3] 
  kLoopEnd       limit                 kLoopEnd,kLoopStart+0.01,1 ; limit loop end to prevent crashes
  
  ; loop points defined by sliders or click and drag...
  kTrigSlid      changed               kLoopStart,kLoopEnd    
  kTrigCAD       changed               kbeg,klen
  if kTrigSlid==1 then
-  gkLoopStart   =                    kLoopStart
-  gkLoopEnd     =                    kLoopEnd
+  gkLoopStart   =                     kLoopStart
+  gkLoopEnd     =                     kLoopEnd
  elseif kTrigCAD==1 then
                 cabbageSetValue       "LoopStart", kbeg/gkTabLen,k(1)
                 cabbageSetValue       "LoopEnd", (kbeg+klen)/gkTabLen,k(1)
@@ -140,7 +156,10 @@ instr    1
  if trigger:k(kDetect,0.5,0)==1 then
   event "i", 200, 0, 30
  endif
- 
+
+ kQuality       cabbageGetValue    "Quality"
+                cabbageSetValue    "Window", 2 ^ kQuality, changed:k(kQuality)
+
 endin
 
 
@@ -154,83 +173,62 @@ instr    99    ; load sound file
                 cabbageSet         "beg", "file", gSfilepath
 endin
 
-instr    2    ; sample triggered by 'play/stop' button
+
+
+
+instr    2    ; sound generating instrument (both GUI button-triggered and MIDI note-triggered)
+kporttime     linseg             0,0.001,0.05                 ; portamento time function. (Rises quickly from zero to a held value.)
+idefault           =                   1
+iMIDI              =                   0
+                   mididefault         idefault, iMIDI ; ivalue overwritten by idefault if MIDI driven
+if iMIDI==1 then ; MIDI
+ iMidiRef          cabbageGetValue     "MidiRef"
+ icps              cpsmidi                                        ; read in midi note data as cycles per second
+ kspeed            =                   icps/cpsmidinn(iMidiRef)
+ iamp              ampmidi             1       ; read in midi velocity (as a value within the range 0 - 1)
+ 
+else              ; non-MIDI
  if gkPlayStop==0 then
   turnoff
  endif
- ktrig changed    gkloop,gkLoopStart,gkLoopEnd,gkopcode
- if ktrig==1 then
+ kspeed            portk               gkspeed,kporttime            ; apply portamento smoothing to changes in speed
+ iamp              =                   1 
+endif
+
+ ; amplitude envelope
+ iAttTim        cabbageGetValue    "AttTim"                    ; read in widgets
+ iRelTim        cabbageGetValue    "RelTim"
+ if iAttTim>0 then                                             ; is amplitude envelope attack time is greater than zero...
+  kenv          linsegr            0,iAttTim,1,iRelTim,0       ; create an amplitude envelope with an attack, a sustain and a release segment (senses realtime release)
+ else
+  kenv          linsegr            1,iRelTim,0                 ; create an amplitude envelope with a sustain and a release segment (senses realtime release)
+ endif
+ kenv           expcurve           kenv,8                      ; remap amplitude value with a more natural curve
+ aenv           interp             kenv                        ; interpolate and create a-rate envelope
+ 
+ kQuality       cabbageGetValue     "Quality"
+ if changed:k(gkloop,gkLoopStart,gkLoopEnd,kQuality)==1 then
   reinit RESTART
  endif
  RESTART:
+ iWindow        =                  2 ^ i(kQuality)
  if giReady = 1 then                                            ; i.e. if a file has been loaded
   iAttTim       cabbageGetValue    "AttTim"                     ; read in widgets
   iRelTim       cabbageGetValue    "RelTim"
-  if iAttTim>0 then                                             ; is amplitude envelope attack time is greater than zero...
-   kenv         linsegr            0,iAttTim,1,iRelTim,0        ; create an amplitude envelope with an attack, a sustain and a release segment (senses realtime release)
-  else
-   kenv         linsegr            1,iRelTim,0                  ; create an amplitude envelope with a sustain and a release segment (senses realtime release)
-  endif
-  kenv          expcurve           kenv,8                       ; remap amplitude value with a more natural curve
-  aenv          interp             kenv                         ; interpolate and create a-rate envelope
-  kporttime     linseg             0,0.001,0.05                 ; portamento time function. (Rises quickly from zero to a held value.)
-  kspeed        portk              gkspeed,kporttime            ; apply portamento smoothing to changes in speed
   klevel        portk              gklevel,kporttime            ; apply portamento smoothing to changes in level
+  
   if gichans==1 then                                            ; if mono...
-   if i(gkopcode)==1 then
-   a1           loscil             klevel,kspeed,gitable,1,i(gkloop)-1,nsamp(gitable)*i(gkLoopStart),nsamp(gitable)*i(gkLoopEnd)    ; use a mono loscil3   
-   else
-   a1           loscil3            klevel,kspeed,gitable,1,i(gkloop)-1,nsamp(gitable)*i(gkLoopStart),nsamp(gitable)*i(gkLoopEnd)    ; use a mono loscil3
-   endif
+    a1          loscilx            klevel*aenv*iamp, kspeed, gitable, iWindow, 1, nsamp(gitable)*i(gkStart), i(gkloop)-1, nsamp(gitable)*i(gkLoopStart),nsamp(gitable)*i(gkLoopEnd)
                 outs               a1*aenv,a1*aenv              ; send mono audio to both outputs 
   elseif gichans==2 then                                        ; otherwise, if stereo...
-   if i(gkopcode)==1 then
-    a1,a2        loscil             klevel,kspeed,gitable,1,i(gkloop)-1,nsamp(gitable)*i(gkLoopStart),nsamp(gitable)*i(gkLoopEnd)    ; use stereo loscil3
-   else
-    a1,a2        loscil3            klevel,kspeed,gitable,1,i(gkloop)-1,nsamp(gitable)*i(gkLoopStart),nsamp(gitable)*i(gkLoopEnd)    ; use stereo loscil3
-   endif   
-                outs               a1*aenv,a2*aenv              ; send stereo signal to outputs
+    a1,a2       loscilx            klevel*aenv*iamp, kspeed, gitable, iWindow, 1, nsamp(gitable)*i(gkStart), i(gkloop)-1, nsamp(gitable)*i(gkLoopStart),nsamp(gitable)*i(gkLoopEnd)
+                outs               a1 * aenv, a2 * aenv         ; send stereo signal to outputs
   endif               
  endif
 endin
 
-instr    3    ; sample triggered by midi note
- icps           cpsmidi                                        ; read in midi note data as cycles per second
- iamp           ampmidi    1                                   ; read in midi velocity (as a value within the range 0 - 1)
- iMidiRef       cabbageGetValue    "MidiRef"
 
- if giReady==1 then                                            ; i.e. if a file has been loaded
-  iAttTim       cabbageGetValue    "AttTim"                    ; read in widgets
-  iRelTim       cabbageGetValue    "RelTim"
-  if iAttTim>0 then                                            ; is amplitude envelope attack time is greater than zero...
-   kenv         linsegr            0,iAttTim,1,iRelTim,0       ; create an amplitude envelope with an attack, a sustain and a release segment (senses realtime release)
-  else
-   kenv         linsegr            1,iRelTim,0                 ; create an amplitude envelope with a sustain and a release segment (senses realtime release)
-  endif
-  kenv          expcurve           kenv,8                      ; remap amplitude value with a more natural curve
-  aenv          interp             kenv                        ; interpolate and create a-rate envelope
-  kporttime     linseg             0,0.001,0.05                ; portamento time function. (Rises quickly from zero to a held value.)
-  ispeed        =                  icps/cpsmidinn(iMidiRef)    ; derive playback speed from note played in relation to a reference note (MIDI note 60 / middle C)
-  klevel        portk              gklevel,kporttime           ; apply portamento smoothing to changes in level
-  if gichans==1 then                                           ; if mono...
-   if i(gkopcode)==1 then
-    a1           loscil            klevel*aenv*iamp,ispeed,gitable,1,i(gkloop)-1,nsamp(gitable)*i(gkLoopStart),nsamp(gitable)*i(gkLoopEnd)    ; use a mono loscil3
-   else
-    a1           loscil3            klevel*aenv*iamp,ispeed,gitable,1,i(gkloop)-1,nsamp(gitable)*i(gkLoopStart),nsamp(gitable)*i(gkLoopEnd)    ; use a mono loscil3
-   endif
-                outs               a1,a1                       ; send mono audio to both outputs 
-  elseif gichans==2 then                                       ; otherwise, if stereo...
-   if i(gkopcode)==1 then
-    a1,a2        loscil             klevel*aenv*iamp,ispeed,gitable,1,i(gkloop)-1,nsamp(gitable)*i(gkLoopStart),nsamp(gitable)*i(gkLoopEnd)    ; use stereo loscil3
-   else
-    a1,a2        loscil3            klevel*aenv*iamp,ispeed,gitable,1,i(gkloop)-1,nsamp(gitable)*i(gkLoopStart),nsamp(gitable)*i(gkLoopEnd)    ; use stereo loscil3
-   endif
-                outs               a1,a2                       ; send stereo signal to outputs
-  endif
- endif
-endin
- 
- 
+  
  instr 200 ; detect pitch of sample and send to MIDI reference
   gitable        ftgen              1,0,0,1,gSfilepath,0,0,0  ; load sound file into a GEN 01 function table 
   gichans        filenchnls         gSfilepath                ; derive the number of channels (mono=1,stereo=2) in the sound file

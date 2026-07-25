@@ -76,7 +76,7 @@ image    bounds( 10,355,410,100), colour(0,0,0,0), outlineThickness(1)
 {
 label    bounds(  0,  5,410, 12), fontColour("white"), text("L O W P A S S   F I L T E R"), align("centre")
 label    bounds( 15, 27, 90, 12), fontColour("white"), text("LPF Type"), align("centre")
-combobox bounds( 15, 40, 90, 20), channel("LPFkind"), text("Bypass","Butterworth","Chebyshev I","Chebyshev II"), textColour("white"), colour(37,59,59), value(2)
+combobox bounds( 15, 40, 90, 20), channel("LPFkind"), text("Bypass","tone","Butterworth","Chebyshev I","Chebyshev II"), textColour("white"), colour(37,59,59), value(2)
 rslider  bounds(115, 20, 75, 75), text("Min."),channel("LPFmin"), range(4,14, 6), $SLIDER_STYLE
 rslider  bounds(185, 20, 75, 75), text("Max."),channel("LPFmax"), range(4,14,14), $SLIDER_STYLE
 rslider  bounds(255, 20, 75, 75), text("N.Poles"),     channel("LPFnpol"),    range(2,80,2,1,2), $SLIDER_STYLE
@@ -88,7 +88,7 @@ image    bounds(430,355,410,100), colour(0,0,0,0), outlineThickness(1)
 {
 label    bounds(  0,  5,410, 12), fontColour("white"), text("H I G H P A S S   F I L T E R"), align("centre")
 label    bounds( 10, 28, 75, 12), fontColour("white"), text("HPF Type"), align("centre")
-combobox bounds( 15, 40, 90, 20), channel("HPFkind"), text("Bypass","Butterworth","Chebyshev I","Chebyshev II"), textColour("white"), colour(37,59,59), value(2)
+combobox bounds( 15, 40, 90, 20), channel("HPFkind"), text("Bypass","atone","Butterworth","Chebyshev I","Chebyshev II"), textColour("white"), colour(37,59,59), value(2)
 rslider  bounds(115, 20, 75, 75), text("Min."),channel("HPFmin"), range(4,14, 6), $SLIDER_STYLE
 rslider  bounds(185, 20, 75, 75), text("Max."),channel("HPFmax"), range(4,14,14), $SLIDER_STYLE
 rslider  bounds(255, 20, 75, 75), text("N.Poles"),     channel("HPFnpol"),    range(2,80,2,1,2), $SLIDER_STYLE
@@ -135,19 +135,25 @@ instr 1
                    cabbageSet          k(1), "LPFnpol", "visible", 0
                    cabbageSet          k(1), "LPFpbr", "visible", 0
                    cabbageSet          k(1), "LPFsba", "visible", 0
-  elseif kLPFkind==2 then              ; butterworth
+  elseif kLPFkind==2 then              ; tone
+                   cabbageSet          k(1), "LPFmin", "visible", 1
+                   cabbageSet          k(1), "LPFmax", "visible", 1
+                   cabbageSet          k(1), "LPFnpol", "visible", 0
+                   cabbageSet          k(1), "LPFpbr", "visible", 0
+                   cabbageSet          k(1), "LPFsba", "visible", 0
+  elseif kLPFkind==3 then              ; butterworth
                    cabbageSet          k(1), "LPFmin", "visible", 1
                    cabbageSet          k(1), "LPFmax", "visible", 1
                    cabbageSet          k(1), "LPFnpol", "visible", 1
                    cabbageSet          k(1), "LPFpbr", "visible", 0
                    cabbageSet          k(1), "LPFsba", "visible", 0
-  elseif kLPFkind==3 then              ; chby I
+  elseif kLPFkind==4 then              ; chby I
                    cabbageSet          k(1), "LPFmin", "visible", 1
                    cabbageSet          k(1), "LPFmax", "visible", 1
                    cabbageSet          k(1), "LPFnpol", "visible", 1
                    cabbageSet          k(1), "LPFpbr", "visible", 1
                    cabbageSet          k(1), "LPFsba", "visible", 0     
-  elseif kLPFkind==4 then              ; chby II                                 ; chby II
+  elseif kLPFkind==5 then              ; chby II
                    cabbageSet          k(1), "LPFmin", "visible", 1
                    cabbageSet          k(1), "LPFmax", "visible", 1
                    cabbageSet          k(1), "LPFnpol", "visible", 1
@@ -172,19 +178,25 @@ instr 1
                    cabbageSet          k(1), "HPFnpol", "visible", 0
                    cabbageSet          k(1), "HPFpbr", "visible", 0
                    cabbageSet          k(1), "HPFsba", "visible", 0
-  elseif kHPFkind==2 then              ; butterworth
+  elseif kHPFkind==2 then              ; tone
+                   cabbageSet          k(1), "HPFmin", "visible", 1
+                   cabbageSet          k(1), "HPFmax", "visible", 1
+                   cabbageSet          k(1), "HPFnpol", "visible", 0
+                   cabbageSet          k(1), "HPFpbr", "visible", 0
+                   cabbageSet          k(1), "HPFsba", "visible", 0
+  elseif kHPFkind==3 then              ; butterworth
                    cabbageSet          k(1), "HPFmin", "visible", 1
                    cabbageSet          k(1), "HPFmax", "visible", 1
                    cabbageSet          k(1), "HPFnpol", "visible", 1
                    cabbageSet          k(1), "HPFpbr", "visible", 0
                    cabbageSet          k(1), "HPFsba", "visible", 0
-  elseif kHPFkind==3 then              ; chby I
+  elseif kHPFkind==4 then              ; chby I
                    cabbageSet          k(1), "HPFmin", "visible", 1
                    cabbageSet          k(1), "HPFmax", "visible", 1
                    cabbageSet          k(1), "HPFnpol", "visible", 1
                    cabbageSet          k(1), "HPFpbr", "visible", 1
                    cabbageSet          k(1), "HPFsba", "visible", 0     
-  elseif kHPFkind==4 then              ; chby II                                 ; chby II
+  elseif kHPFkind==5 then              ; chby II
                    cabbageSet          k(1), "HPFmin", "visible", 1
                    cabbageSet          k(1), "HPFmax", "visible", 1
                    cabbageSet          k(1), "HPFnpol", "visible", 1
@@ -267,8 +279,14 @@ instr 1
  endif
  UPDATE_LPF:
  if i(kLPFkind)>1 then ; i.e., not bypassed
-  aL                clfilt            aL, kLPF, 0, i(kLPFnpol), i(kLPFkind)-2, i(kLPFpbr), i(kLPFsba),i(kInitLPF)
-  aR                clfilt            aR, kLPF, 0, i(kLPFnpol), i(kLPFkind)-2, i(kLPFpbr), i(kLPFsba),i(kInitLPF)
+  if kLPFkind==2 then ; tone
+   aL                tone              aL, kLPF
+   aR                tone              aR, kLPF
+  else
+   iLPFkind          limit             i(kLPFkind)-3, 0, 2
+   aL                clfilt            aL, kLPF, 0, i(kLPFnpol), iLPFkind, i(kLPFpbr), i(kLPFsba), i(kInitLPF)
+   aR                clfilt            aR, kLPF, 0, i(kLPFnpol), iLPFkind, i(kLPFpbr), i(kLPFsba), i(kInitLPF)
+  endif
  endif
  rireturn
  
@@ -283,8 +301,14 @@ instr 1
  endif
  UPDATE_HPF:
  if i(kHPFkind)>1 then ; i.e., not bypassed
-  aL                clfilt            aL, kHPF, 1, i(kHPFnpol), i(kHPFkind)-2, i(kHPFpbr), i(kHPFsba),i(kInitHPF)
-  aR                clfilt            aR, kHPF, 1, i(kHPFnpol), i(kHPFkind)-2, i(kHPFpbr), i(kHPFsba),i(kInitHPF)
+  if kLPFkind==2 then ; atone
+   aL                atone             aL, kHPF
+   aR                atone             aR, kHPF
+  else
+   iHPFkind          limit             i(kHPFkind)-3, 0, 2
+   aL                clfilt            aL, kHPF, 1, i(kHPFnpol), iHPFkind, i(kHPFpbr), i(kHPFsba),i(kInitHPF)
+   aR                clfilt            aR, kHPF, 1, i(kHPFnpol), iHPFkind, i(kHPFpbr), i(kHPFsba),i(kInitHPF)
+  endif
  endif
  rireturn
 

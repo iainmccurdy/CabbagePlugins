@@ -52,7 +52,7 @@ label    bounds(  5,213,120, 12), text("Iain McCurdy |2012|"), align("left"), fo
 <CsoundSynthesizer>
 
 <CsOptions>
--d -n --displays
+-dm0 -n --displays
 </CsOptions>
 
 <CsInstruments>

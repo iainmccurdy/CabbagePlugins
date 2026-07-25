@@ -48,7 +48,7 @@ https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode */
 
 ; UNISON NOTE   -   MIDI note that will produce unison playback
 
-;--- STRETCH       -   intervallic stretch for MIDI-activated notes
+; STRETCH       -   intervallic stretch for MIDI-activated notes. Zero = all notes the same. Negative values produce an inverted scale.
 ; ATTACK        -   amplitude envelope attack time for event both from the PLAY button and MIDI notes
 ; RELEASE       -   amplitude envelope release time for event both from the PLAY button and MIDI notes
 ; TUNING        -   tuning system used for MIDI-activated notes
@@ -113,14 +113,14 @@ checkbox bounds( 10, 45,120, 12), channel("Y2Speed"), text("Y TO SPEED"), colour
 checkbox bounds( 10, 65, 95, 12), channel("MouseGate"), text("MOUSE GATE"), colour:0(0,50,0), value(0)
 
 rslider  bounds(130,  5, 90, 90), channel("LPFRes"), range(0.5,25,0.5,0.5), text("LPF. RES."), visible(0), $DIAL_STYLE
-rslider  bounds(210,  5, 90, 90), channel("HPFRes"), range(0.5,25,0.5,0.5), text("LPF. RES."), visible(0), $DIAL_STYLE
+rslider  bounds(210,  5, 90, 90), channel("HPFRes"), range(0.5,25,0.5,0.5), text("HPF. RES."), visible(0), $DIAL_STYLE
 
 ;checkbox bounds(310,  5,120, 12), channel("MIDI2Pitch"), text("MIDI TO PITCH"), colour:0(0,50,0), value(1)
 ;checkbox bounds(310, 25,120, 12), channel("MIDI2Speed"), text("MIDI TO SPEED"), colour:0(0,50,0)
 
 nslider  bounds(430,  7, 80, 35), channel("Unison"), text("UNISON NOTE"), range(0,127,60,1,.01)
 
-rslider  bounds(510,  5, 90, 90), channel("Stretch"), range(-5,5,0), text("STRETCH"), $DIAL_STYLE
+rslider  bounds(510,  5, 90, 90), channel("Stretch"), range(-2,2,1), text("STRETCH"), $DIAL_STYLE
 rslider  bounds(590,  5, 90, 90), channel("AttTim"), range(0.01,25, 0.01, 0.5), text("ATTACK"), $DIAL_STYLE
 rslider  bounds(670,  5, 90, 90), channel("RelTim"), range(0.01,25, 0.01, 0.5), text("RELEASE"), $DIAL_STYLE
 
@@ -145,6 +145,9 @@ label    bounds( 10,643,110, 12), text("Iain McCurdy |2025|"), align("left"), fo
 ksmps              =                   32
 nchnls             =                   2
 0dbfs              =                   1
+
+; Author: Iain McCurdy (2025)
+
 
                    massign             0, 2
 
@@ -186,12 +189,7 @@ gi19TET            ftgen               0,         0,       64,       -2,        
 gi31TET            ftgen               0,         0,       64,       -2,          31,          2,   cpsmidinn(60),      60,                       1,2^(1/31),2^(2/31),2^(3/31),2^(4/31),2^(5/31),2^(6/31),2^(7/31),2^(8/31),2^(9/31),2^(10/31),2^(11/31),2^(12/31),2^(13/31),2^(14/31),2^(15/31),2^(16/31),2^(17/31),2^(18/31),2^(19/31),2^(20/31),2^(21/31),2^(22/31),2^(23/31),2^(24/31),2^(25/31),2^(26/31),2^(27/31),2^(28/31),2^(29/31),2^(30/31),2^(31/31)
 giBP               ftgen               0,         0,       64,       -2,          13,          3,   cpsmidinn(60),      60,                       1,3^(1/13),3^(2/13),3^(3/13),3^(4/13),3^(5/13),3^(6/13),3^(7/13),3^(8/13),3^(9/13),3^(10/13),3^(11/13),3^(12/13),3^(13/13)
 
-; Author: Iain McCurdy (2025)
-
-
-
 gkReady            init                0        ; flag to indicate function table readiness
-
 
 
 ; Performance
@@ -239,6 +237,7 @@ instr    1 ; READ IN WIDGETS AND START AND STOP THE VARIOUS RECORDING AND PLAYBA
  gkPlayOnce        cabbageGetValue     "PlayOnce"
  gkPlayOnceTrig    changed             gkPlayOnce
  gkSpeed           cabbageGetValue     "Speed"
+ gkDir             =                   gkSpeed > 0 ? 1 : -1
  gkSpeed           pow                 gkSpeed, 2
  gkPitch           cabbageGetValue     "Pitch"
  gkPitch           portk               gkPitch, gkPortTime
@@ -294,8 +293,7 @@ if kMouseMoveFlag==1 && changed:k(kMouseX - kMouseXPrev)==1 then
 endif
 kMouseXPrev        =                   kMouseX
 
- kYNorm            =                   1 - (kMouseY-iOLY)/iOLHeight
-
+kYNorm            =                   1 - (kMouseY-iOLY)/iOLHeight
 ; Mouse to pitch
 kY2Pitch cabbageGetValue "Y2Pitch"
 if kY2Pitch==1 && gkMOUSE_DOWN_LEFT==1 && kMouseX>=iOLX && kMouseX<=(iOLX+iOLWidth) && kMouseY>=iOLY && kMouseY<=(iOLY+iOLHeight) then
@@ -356,9 +354,10 @@ iMIDI              =                   0
 if iMIDI==1 then ; MIDI
  iUnison           cabbageGetValue     "Unison"
  icps              cpstmid             giTTable1 + cabbageGetValue:i("Tuning") - 1
- iPchRto           =                   icps/cpsmidinn(iUnison)
+ iMidiNote         =                   ftom:i(icps)
  kStretch          cabbageGetValue     "Stretch"
- kPitch            =                   iPchRto ^ (2^kStretch)
+ kMidiNote         =                   ((iMidiNote-iUnison) * kStretch) + iUnison
+ kPitch            =                   cpsmidinn(kMidiNote)/cpsmidinn(iUnison)
  ivel              ampmidi             1       ; read in midi velocity (as a value within the range 0 - 1)
  
 else              ; non-MIDI
@@ -368,7 +367,6 @@ endif                                          ; END OF THIS CONDITIONAL BRANCH
  kPitch            =                   gkPitch
  ivel              =                   1
 endif
-
 
 
 ; AMPLITUDE ENELOPE
@@ -382,6 +380,7 @@ iFileLen           =                   ftlen(gitableL) / ftsr(gitableL)         
 kRamp              linseg              0, 0.01, 1
 kPortTime          =                   kRamp * gkPortTime
 
+kSpeedDir          =                   gkSpeed > 0 ? 1 : -1
 kLoopBeg           portk               gkLoopBeg, kPortTime                         ; APPLY PORTAMENTO SMOOTHING TO CHANGES OF LOOP BEGIN SLIDER
 kLoopEnd           portk               gkLoopEnd, kPortTime                         ; APPLY PORTAMENTO SMOOTHING TO CHANGES OF LOOP END SLIDER
 kLoopBeg           =                   kLoopBeg * iFileLen                          ; RESCALE gkLoopBeg (RANGE 0-1) TO BE WITHIN THE RANGE 0-FILE_LENGTH.
@@ -389,7 +388,7 @@ kLoopEnd           =                   kLoopEnd * iFileLen                      
 kLoopLen           =                   abs(kLoopEnd - kLoopBeg)                     ; DERIVE LOOP LENGTH FROM LOOP START AND END POINTS
 kPlayPhasFrq       divz                gkSpeed * (1-gkFreeze), kLoopLen, 0          ; SAFELY DIVIDE, PROVIDING ALTERNATIVE VALUE IN CASE DENOMINATOR IS ZERO 
 kDir               =                   gkLoopEnd > gkLoopBeg ? 1 : -1
-kPhasor            oscilikt            1, kPlayPhasFrq * (gkLoopShape == 1 ? 1 : 0.5) * kDir, gkLoopShape + giRamp - 1
+kPhasor            oscilikt            1, gkDir * kPlayPhasFrq * (gkLoopShape == 1 ? 1 : 0.5) * kDir * kSpeedDir, gkLoopShape + giRamp - 1
 kPlayNdx           =                   (kPhasor * kLoopLen) + kLoopBeg               ; RESCALE INDEX POINTER ACCORDING TO LOOP LENGTH AND LOOP BEGINING
 
 ; move wiper

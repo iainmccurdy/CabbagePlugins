@@ -30,6 +30,12 @@ https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode */
 
 ; Open File      -   browse for a file to be played back by diskin
 ; Play/Stop      -   play or stop single playback of the file. This is independent of triggering playback using the MIDI keyboard.
+
+; Y Filters      -   if activated y-axis location of the mouse over the waveform viewer controls 
+;                     the cutoff frequencies of low-pas and high-pass filters.
+; X Transpose    -   if activated x-axis location of the mouse over the waveform viewer controls 
+;                     the playback speed/transpose.
+
 ; Loop On/Off    -   if activated, once playback reaches the end of the file it continues again from the beginning.
 ;                     if playback direction is in reverse, the same behaviour applies to the beginning of the file.
 ; Reverse        -   reverse playback direction. 
@@ -84,7 +90,7 @@ https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode */
 <Cabbage>
 form caption("Diskin File Player") size(980, 490), pluginId("DkPl"), colour( 50, 30, 30), guiMode("queue")
 
-soundfiler bounds(  5,  5, 970,140), channel("beg","len"), channel("filer1"),  colour(0, 255, 255, 255), fontColour(160, 160, 160, 255)
+soundfiler bounds(  5,  5, 970,140), channel("filer1"),  colour(0, 255, 255, 255), fontColour(160, 160, 160, 255)
 image      bounds(  5,  5,   1,140), channel("InskipIndicator"), alpha(0.5)
 label      bounds(10, 8, 560, 14), text(""), align("left"), colour(0,0,0,0), fontColour(200,200,200), channel("FileName")
 
@@ -92,6 +98,8 @@ image bounds(0,150,1175,160), colour(0,0,0,0), plant("controls")
 {
 filebutton bounds(  5,  5, 80, 25), text("Open File","Open File"), fontColour("white") channel("filename"), shape("ellipse")
 checkbox   bounds(  5, 40, 95, 25), channel("PlayStop"), text("Play/Stop"), colour("lime"), fontColour:0("white"), fontColour:1("white"), colour:0( 90, 90,0), colour:1(255,255,0), corners(3)
+checkbox   bounds(  5, 70,110, 15), channel("Y2Filt"), text("Y Filters"), value(0), fontColour:0("white"), fontColour:1("white")
+checkbox   bounds(  5, 90,110, 15), channel("X2Trans"), text("X Transpose"), value(0), fontColour:0("white"), fontColour:1("white")
 
 checkbox   bounds(110,  5,100, 15), channel("loop"), text("Loop On/Off"), colour("yellow"), fontColour:0("white"), fontColour:1("white"), colour:0( 90, 90,0), colour:1(255,255,0), corners(3)
 checkbox   bounds(110, 22,100, 15), channel("reverse"), text("Reverse"), colour("yellow"), fontColour:0("white"), fontColour:1("white"), colour:0( 90, 90,0), colour:1(255,255,0), corners(3)
@@ -266,7 +274,8 @@ instr    1 ; always on
  gkRate2           cabbageGetValue     "Rate2"
  kInSkip           cabbageGetValue     "inskip"
                    cabbageSet          changed:k(kInSkip), "InskipIndicator", "bounds", 5+kInSkip*1025,5,1,140
-
+ gkY2Filt          cabbageGetValue     "Y2Filt"
+ 
  ; load file from browse
  gSfilepath        cabbageGetValue     "filename"   ; read in file path string from filebutton widget
  if changed:k(gSfilepath)==1 then                   ; call instrument to update waveform viewer  
@@ -308,7 +317,32 @@ instr    1 ; always on
  kLegato           cabbageGetValue     "Legato"
                    cabbageSet          changed:k(kLegato), "LegTime", "active", kLegato
                    cabbageSet          changed:k(kLegato), "LegTime", "alpha", 0.5 + kLegato*0.5
- 
+
+
+; read soundfiler bounds
+iBounds[]          cabbageGet          "filer1", "bounds"
+iOLX               =                   iBounds[0]
+iOLY               =                   iBounds[1]
+iOLWidth           =                   iBounds[2]
+iOLHeight          =                   iBounds[3]
+
+kMouseDownLeft     cabbageGetValue     "MOUSE_DOWN_LEFT"
+kMouseX            cabbageGetValue     "MOUSE_X"
+kMouseY            cabbageGetValue     "MOUSE_Y"
+
+; mouse to transpose
+kXNorm             limit               (kMouseX-iBounds[0]) / iBounds[2], 0, 1
+kYNorm             limit               1 - ((kMouseY-iBounds[1]) / iBounds[3]), 0, 1
+                   cabbageSetValue     "transpose", scale:k(kXNorm,48,-48), changed:k(kXNorm) * cabbageGetValue:k("X2Trans")
+
+  ; filter parameters from mouse Y position over file viewer
+  kLPF_CF          scale               (kYNorm * 2), 14, 4
+  kLPF_CF          limit               kLPF_CF, 4, 14
+  kHPF_CF          scale               (kYNorm * 2) - 1, 14, 4
+  kHPF_CF          limit               kHPF_CF, 4, 14  
+  gkLPF_CF         port                kLPF_CF, 0.05
+  gkHPF_CF         port                kHPF_CF, 0.05
+
 endin
 
 
@@ -332,11 +366,10 @@ instr    2 ; Checkbox-triggered note
   aenv             interp              kenv              ; interpolate and create a-rate envelope
   iFileLen         filelen             Sfile             ; derive chosen sound file length
   iNChns           filenchnls          Sfile             ; derive the number of channels (mono=1 / stereo=2) from the chosen  sound file
-  iinskip          cabbageGetValue     "inskip"          ; read in inskip widget
+  kinskip          cabbageGetValue     "inskip"          ; read in inskip widget
   iloop            cabbageGetValue     "loop"            ; read in 'loop mode' widget
-  ktrig            changed             gkloop,gkinterp   ; if loop setting or interpolation mode setting
-  if ktrig==1 then                                            ; if loop setting has been changed...
-   reinit RESTART                                             ; reinitialise from label RESTART
+  if changed:k(gkloop,gkinterp,kinskip)==1 then          ; if loop setting or interpolation mode setting is changed...
+   reinit RESTART                                        ; reinitialise from label RESTART
   endif                        
   RESTART:                    
   kporttime        linseg              0,0.001,0.05      ; portamento time function. (Rises quickly from zero to a held value.)
@@ -361,11 +394,11 @@ instr    2 ; Checkbox-triggered note
   SKIP_STRETCH:
     
   if iNChns==2 then                         ; if stereo...
-   a1,a2           diskin2             Sfile,kspeed*(1-(gkreverse*2)),iinskip*iFileLen,i(gkloop),0,giInterpArr[i(gkinterp)-1]    ; use stereo diskin2
+   a1,a2           diskin2             Sfile, kspeed*(1-(gkreverse*2)), i(kinskip)*iFileLen, i(gkloop), 0, giInterpArr[i(gkinterp)-1]    ; use stereo diskin2
    a1              =                   a1 * gklevel * aenv
    a2              =                   a2 * gklevel * aenv
   elseif iNChns==1 then                     ; if mono
-   a1              diskin2             Sfile,kspeed*(1-(gkreverse*2)),iinskip*iFileLen,i(gkloop),0,giInterpArr[i(gkinterp)-1]    ; use mono diskin2
+   a1              diskin2             Sfile, kspeed*(1-(gkreverse*2)), i(kinskip)*iFileLen, i(gkloop), 0, giInterpArr[i(gkinterp)-1]    ; use mono diskin2
    a1              =                   a1 * gklevel * aenv
    a2              =                   a1
   endif
@@ -385,6 +418,19 @@ instr    2 ; Checkbox-triggered note
     a_, a2, a_     zdf_2pole_mode      a2, aCF, 0.5 + (kRes * 24.5)
    endif
   endif
+  
+     ; Y Filters
+   if gkY2Filt==1 then
+    kLPFRes        = 0.5 ;cabbageGetValue     "LPFRes"
+    kHPFRes        = 0.5 ;cabbageGetValue     "HPFRes"
+    a1             zdf_2pole           a1, a(cpsoct(gkLPF_CF)), kLPFRes    ; lowpass
+    a2             zdf_2pole           a2, a(cpsoct(gkLPF_CF)), kLPFRes
+    a1             zdf_2pole           a1, a(cpsoct(gkHPF_CF)), kHPFRes, 1 ; highpass
+    a2             zdf_2pole           a2, a(cpsoct(gkHPF_CF)), kHPFRes, 1
+   endif
+
+  
+  
                    outs                a1, a2
  endif
 endin

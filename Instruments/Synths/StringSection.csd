@@ -53,7 +53,7 @@ image    bounds(  5,  5,330,130), colour(0,0,0,0), outlineThickness(2), outlineC
 label    bounds(  0,  6,330, 13), text("D  E  S  I  G  N"), fontColour("black")
 rslider  bounds(  5, 20, 80,100), channel("Depth"), range(0.3,10, 0.4), text("Mod. Depth"), $SliderDesign4
 rslider  bounds( 85, 20, 80,100), channel("NVoice"), range(1,100,50,1,1), text("Number"), $SliderDesign4
-rslider  bounds(165, 20, 80,100), channel("Movement"), range(0.1,20,0.5), text("Movement"), $SliderDesign4
+rslider  bounds(165, 20, 80,100), channel("Movement"), range(0.0001,20,0.5), text("Movement"), $SliderDesign4
 rslider  bounds(245, 20, 80,100), channel("Brightness"), range(3,12,8), text("Tone"), $SliderDesign4
 }
 

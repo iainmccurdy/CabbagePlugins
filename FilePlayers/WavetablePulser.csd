@@ -328,10 +328,6 @@ iUniFrq            =                   ftsr(gi1)/ftlen(gi1)
 
 p3                 =                   1 / (iUniFrq*i(gkPitchRatio)*i(gkPitchRateRatio))
 aPtr               linseg              0, p3, 1
-;aPtr               init                0
-;if k(aPtr)>1 then
-; turnoff
-;endif
 
 aPtrD              pdhalf              aPtr, gkPhaseDist
 
@@ -345,7 +341,7 @@ a1                 tablexkt            aPtrD, gi1, iAAlias*(gkPhaseClip+gkPitchR
 a2                 tablexkt            aPtrD, gi2, iAAlias*(gkPhaseClip+gkPitchRatio), iQual, 1 ;] [, ixoff] [, iwrap] 
 
 if cabbageGetValue:i("WindOnOff")==1 then
- aWind             tablei              aPtr, giWind, 1
+ aWind             tablei              aPtrD, giWind, 1
  a1                *=                  aWind
  a2                *=                  aWind
 endif

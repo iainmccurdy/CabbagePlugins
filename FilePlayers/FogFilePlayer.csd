@@ -515,8 +515,8 @@ instr    2    ; triggered by 'play/stop' button or right-click and drag
    a1b             fog                 klevelL, kdensL * gkDensRatio, kpchL * octave(gkTransDiff), aptrL+(gkPtrDiff*nsamp(1)/ftlen(1)), gkOctDiv, gkband, gkris, gkdur, gkdec, iNumOverLaps, 1, giattdec, itotdur, 0, i(gkTransMode)-1, 1
    a2b             fog                 klevelR, kdensR * gkDensRatio, kpchR * octave(gkTransDiff), aptrR+(gkPtrDiff*nsamp(1)/ftlen(1)), gkOctDiv, gkband, gkris, gkdur, gkdec, iNumOverLaps, 2, giattdec, itotdur, 0, i(gkTransMode)-1, 1
    if gkDelay>0 then
-    a1b            vdelay              a1b, (gkDelay*1000)/gkdens, 1000
-    a2b            vdelay              a2b, (gkDelay*1000)/gkdens, 1000
+    a1b            vdelay              a1b, a((gkDelay*1000)/gkdens), 1000
+    a2b            vdelay              a2b, a((gkDelay*1000)/gkdens), 1000
    endif
    a1              +=                  a1b
    a2              +=                  a2b
@@ -663,8 +663,8 @@ instr    3 ; MIDI triggered fog file player
    a1b             fog                 klevelL, kdensL*gkDensRatio, kpchL*octave(gkTransDiff) * semitone(kBend)*ftsr(1)/sr, aptrL+(gkPtrDiff*nsamp(1)/ftlen(1)), gkOctDiv, gkband, gkris, gkdur, gkdec, iNumOverLaps, 1, giattdec, itotdur, 0, i(gkTransMode)-1, 1
    a2b             fog                 klevelR, kdensR*gkDensRatio, kpchR*octave(gkTransDiff) * semitone(kBend)*ftsr(1)/sr, aptrR+(gkPtrDiff*nsamp(1)/ftlen(1)), gkOctDiv, gkband, gkris, gkdur, gkdec, iNumOverLaps, 2, giattdec, itotdur, 0, i(gkTransMode)-1, 1
    if gkDelay>0 then
-    a1b            vdelay              a1b,(gkDelay*1000)/gkdens,1000
-    a2b            vdelay              a2b,(gkDelay*1000)/gkdens,1000
+    a1b            vdelay              a1b, a((gkDelay*1000)/gkdens), 1000
+    a2b            vdelay              a2b, a((gkDelay*1000)/gkdens), 1000
    endif
    a1              +=                  a1b
    a2              +=                  a2b
