@@ -8,7 +8,9 @@ https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode */
 ; oscbnk_synth.csd
 ; Written by Iain McCurdy, 2012, 2022
 
-; A synthesiser utilising the oscbnk opcode
+; A synthesiser utilising the oscbnk opcode.
+; Each note played can trigger a cluster of oscillators, the precise pitches of which 
+;  are randomly modulated. This parameter is referred to as 'spread'.
 ; 
 ; CONTROLS
 ; --------
@@ -87,15 +89,15 @@ groupbox bounds(  0, 0, 765,110), text("Oscillators"), fontColour(255, 255, 255,
 {
 rslider  bounds(  5, 25, 55, 80), text("Amp."),    channel("amp"),   range(0, 1, 0.2, 0.5, 0.001), $RSLIDER_DESIGN
 rslider  bounds( 60, 25, 55, 80), text("N.Oscs."), channel("NOscs"), range(1, 100, 10, 1, 1), $RSLIDER_DESIGN
-rslider  bounds(115, 25, 55, 80), text("Spread"),  channel("fmd"),   range(0, 10, 0.005, 0.25, 1e-06), $RSLIDER_DESIGN
+rslider  bounds(115, 25, 55, 80), text("Spread"),  channel("fmd"),   range(0, 9.999, 0.005, 0.25, 0.001), $RSLIDER_DESIGN
 
 ;SPREAD ENVELOPE
 label    bounds(175, 23,265, 10), text("S P R E A D      E N V E L O P E"), align("centre"), colour(255,255,255,155), fontColour("Black")
 rslider  bounds(165, 35, 55, 70), text("Amt."),  channel("SEAmt"),   range(0, 1, 1), trackerColour(255, 255, 255, 255) colour(173, 216, 230, 255), $RSLIDER_DESIGN
-rslider  bounds(210, 35, 55, 70), text("Att."),  channel("SEAtt"),   range(0, 15, 0.95, 0.5), trackerColour(255, 255, 255, 255) colour(173, 216, 230, 255), $RSLIDER_DESIGN
-rslider  bounds(255, 35, 55, 70), text("Dec."),  channel("SEDec"),   range(0, 15, 0.5, 0.5), trackerColour(255, 255, 255, 255) colour(173, 216, 230, 255), $RSLIDER_DESIGN
-rslider  bounds(300, 35, 55, 70), text("Sus."),  channel("SESus"),   range(0, 1, 1), trackerColour(255, 255, 255, 255) colour(173, 216, 230, 255), $RSLIDER_DESIGN
-rslider  bounds(345, 35, 55, 70), text("Rel."),  channel("SERel"),   range(0, 15, 0.2, 0.5), trackerColour(255, 255, 255, 255) colour(173, 216, 230, 255), $RSLIDER_DESIGN
+rslider  bounds(210, 35, 55, 70), text("Att."),  channel("SEAtt"),   range(0, 15, 0.95, 0.5, 0.01), trackerColour(255, 255, 255, 255) colour(173, 216, 230, 255), $RSLIDER_DESIGN
+rslider  bounds(255, 35, 55, 70), text("Dec."),  channel("SEDec"),   range(0, 15, 0.5, 0.5), 0.01, trackerColour(255, 255, 255, 255) colour(173, 216, 230, 255), $RSLIDER_DESIGN
+rslider  bounds(300, 35, 55, 70), text("Sus."),  channel("SESus"),   range(0, 1, 1, 0.5, 0.01), trackerColour(255, 255, 255, 255) colour(173, 216, 230, 255), $RSLIDER_DESIGN
+rslider  bounds(345, 35, 55, 70), text("Rel."),  channel("SERel"),   range(0, 15, 0.2, 0.5, 0.01), trackerColour(255, 255, 255, 255) colour(173, 216, 230, 255), $RSLIDER_DESIGN
 checkbox bounds(395, 45, 45, 15), text("Inv."), channel("SEInv"), value(0)
 ;OSCILLATORS II
 rslider  bounds(445, 25, 55, 80), text("Speed"), channel("mvt"),   range(0, 1000, 1, 0.25, 0.001),   trackerColour(255, 255, 255, 255) colour(173, 216, 230, 255), $RSLIDER_DESIGN
@@ -113,7 +115,7 @@ combobox bounds(765, 45, 80, 20), text("Clock M.", "Clock St.", "Note M.", "Note
 ;FILTER ENVELOPE
 groupbox bounds(  0,110,445,110), text("Filter"), fontColour("white")
 {
-rslider  bounds(  5, 25, 55, 80), text("Manual"), channel("cf"), range(0, 10.00, 3.74),     trackerColour("white") colour(LightBlue), $RSLIDER_DESIGN
+rslider  bounds(  5, 25, 55, 80), text("Manual"), channel("cf"), range(0, 10.00, 3.74, 1, 0.01),     trackerColour("white") colour(LightBlue), $RSLIDER_DESIGN
 rslider  bounds( 55, 25, 55, 80), text("Env."), channel("FEnvAmt"), range(0, 10.00, 4.39), trackerColour("white") colour(LightBlue), $RSLIDER_DESIGN
 rslider  bounds(105, 25, 55, 80), text("Att."), channel("FAtt"), range(0, 8.00, 0.9,0.5),  trackerColour("white") colour(LightBlue), $RSLIDER_DESIGN
 rslider  bounds(155, 25, 55, 80), text("Dec."), channel("FDec"), range(0, 8.00, 1,0.5),    trackerColour("white") colour(LightBlue), $RSLIDER_DESIGN

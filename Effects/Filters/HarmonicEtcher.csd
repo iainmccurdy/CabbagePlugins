@@ -101,12 +101,13 @@ image                    bounds(  0,  0,1265,575), file("DarkBrushedMetal.jpeg")
 image    bounds(  5,  5,200,185), colour(0,0,0,0), outlineThickness(1), corners(5)
 {
 label      bounds(  5, 10, 80, 13), text("Audio Input"), align("centre")
-combobox   bounds(  5, 30, 80, 20), channel("AudioInput"), items("Live","Noise","File","Buzz"), value(1)
+combobox   bounds(  5, 25, 80, 25), channel("AudioInput"), items("Live","Noise","File","Buzz"), value(1)
 
 rslider    bounds(  5, 80, 80, 90), channel("PreFilt"), text("Pre. Filt."), valueTextBox(1), trackerColour("DarkSlateGrey"), range(20,20000,20000,0.5,1)
 
 filebutton bounds(105, 10, 80, 25), text("Open File","Open File"), fontColour("White") channel("filename"), shape("ellipse"), corners(5)
-checkbox   bounds(105, 50, 80, 20), channel("OnOff"), value(0), text("Play/Stop"), colour:0(50,50,20), colour:1(255,255,100)
+label      bounds(106, 49, 20, 20), text(">"), active(0)
+checkbox   bounds(105, 50, 80, 20), channel("OnOff"), value(0), text("Play/Stop"), colour:0(150,150,120,100), colour:1(255,255,100,200)
 rslider    bounds(105, 80, 80, 90), channel("speed"), text("Speed"), valueTextBox(1), trackerColour("DarkSlateGrey"), range(0,8,1,0.5)
 }
 

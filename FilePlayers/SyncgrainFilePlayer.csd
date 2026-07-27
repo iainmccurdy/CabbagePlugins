@@ -46,8 +46,9 @@ https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode */
 ; Pch Bend  -  pitch bend range in semitones
 ; Level     -  output amplitude level
 
-; The XY pad automatically controls speed (x direction) and transpose (y direction) in parallel with the dial controls. 
-;  If 'XY Filters' is activated, the Y direction also controls the cutoff frequencies of a low-pass and a high-pass filter.
+; The XY pad can be used to remotely control a range of parameters. 
+; These movements will then be mirrored by automated movemetn of rotary sliders in the GUI.
+; This allows multiple controls be modified at the same time using the mouse or track-pad. 
 
 <Cabbage>
 form caption("Syncgrain File Player") size(1080,390), colour(0,0,0) pluginId("SGFP"), guiMode("queue")
@@ -57,7 +58,7 @@ soundfiler   bounds(  5,  5,687,175), channel("beg","len"),  colour(0, 255, 255,
 label        bounds(  7,  7,687, 14), text(""), align("left"), colour(0,0,0,0), fontColour(200,200,200), channel("stringbox")
 
 
-#define SLIDER_DESIGN colour(90,50,50), textColour("white"), trackerColour(190,170,130), outlineColour(100,100,100), valueTextBox(1)
+#define SLIDER_DESIGN colour(90,50,50), textColour("white"), fontColour("white"), trackerColour(190,170,130), outlineColour(100,100,100), valueTextBox(1)
 
 image      bounds(  0,180,1085,200), colour(0,0,0,0), outlineColour("white"), line(0), shape("sharp"), plant("controls")
 {
@@ -66,7 +67,7 @@ checkbox   bounds(  5, 60, 95, 25), channel("PlayStop"), text("Play/Stop"), font
 label      bounds(280,  4, 70, 9), text("G   R   A   I   N   S"), fontColour("silver")
 rslider    bounds( 90, 15, 90, 90), channel("density"),   range( 0.5,400.00,40, 0.5),  text("Density"),   $SLIDER_DESIGN  
 rslider    bounds(160, 15, 90, 90), channel("DensOS"),     range( 0, 5.00, 0),         text("Dens. OS"),   $SLIDER_DESIGN
-rslider    bounds(230, 15, 90, 90), channel("grsize"),   range( 0.001,1.00, 0.1, 0.5), text("Size"),      $SLIDER_DESIGN
+rslider    bounds(230, 15, 90, 90), channel("grsize"),   range( 0.001,1.00, 0.1, 0.5, 0.001), text("Size"),      $SLIDER_DESIGN
 rslider    bounds(300, 15, 90, 90), channel("SizeOS"),   range( 0, 5.00, 0, 0.5),      text("Size OS"),   $SLIDER_DESIGN
 rslider    bounds(370, 15, 90, 90), channel("transpose"), range(-48, 48, 0,1,0.01),       text("Transpose"), $SLIDER_DESIGN
 rslider    bounds(440, 15, 90, 90), channel("TransposeOS"), range(0, 36.00, 0),        text("Trans. OS"),  $SLIDER_DESIGN
@@ -95,10 +96,11 @@ keyboard   bounds(  5,115,1070, 80)
 xypad      bounds(697,  5,243,175), channel("X","Y"), text("X - Speed | Y - Transpose"), fontColour(0,0,0,0)
 checkbox   bounds(945, 10,130, 15), channel("XtoSpeed"), text("X to Speed"), colour("Yellow"), fontColour:0("white"), fontColour:1("white"), value(0)
 checkbox   bounds(945, 35,130, 15), channel("XtoDens"), text("X to Density"), colour("Yellow"), fontColour:0("white"), fontColour:1("white"), value(0)
-
+line       bounds(960, 62,100,  3), colour("silver")
 checkbox   bounds(945, 80,130, 15), channel("YtoTrans"), text("Y to Transposition"), colour("Yellow"), fontColour:0("white"), fontColour:1("white"), value(0)
 checkbox   bounds(945,105,130, 15), channel("YtoFilters"), text("Y to Filters"), colour("Yellow"), fontColour:0("white"), fontColour:1("white"), value(0)
 checkbox   bounds(945,130,130, 15), channel("YtoDens"), text("Y to Density"), colour("Yellow"), fontColour:0("white"), fontColour:1("white"), value(0)
+checkbox   bounds(945,155,130, 15), channel("YtoSize"), text("Y to G. Size"), colour("Yellow"), fontColour:0("white"), fontColour:1("white"), value(0)
 
 label    bounds(  5,377,120, 12), text("Iain McCurdy |2014|"), align("left"), fontColour("Silver")
 
@@ -191,6 +193,7 @@ instr    1
   gkYtoFilters     init                0
   gkYtoDens        cabbageGetValue     "YtoDens"
                    cabbageSetValue     "XtoDens", 0, trigger:k(gkYtoDens,0.5,0)
+  gkYtoSize        cabbageGetValue     "YtoSize"
 
  kX,kT             cabbageGetValue     "X"
                    cabbageSetValue     "speed", kX*4 - 2, kT*gkXtoSpeed
@@ -198,10 +201,7 @@ instr    1
  kY,kT             cabbageGetValue     "Y"
                    cabbageSetValue     "transpose", kY*96 - 48, kT*gkYtoTrans
                    cabbageSetValue     "density", kY^3*395.5 + 0.5, kT*gkYtoDens
-
-                
-;checkbox   bounds(945,130,130, 15), channel("YtoDens"), text("Y to Density"), colour("Yellow"), fontColour:0("white"), fontColour:1("white"), value(0)
-
+                   cabbageSetValue     "grsize", scale:k(kY^3,1,0.001), kT*gkYtoSize
                                                                 
   ; filter parameters
   kLPF_CF          scale               cabbageGetValue:k("Y")*2,14,4

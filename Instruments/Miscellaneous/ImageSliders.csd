@@ -10,9 +10,6 @@ https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode */
 
 ; This example demonstrates a method to create sliders from the 'image' widget.
 ; This opens a number of possibilities in terms of how we can customise the look and behaviour of a slider
-; A distinct disadvantage (for the moment anyway) is that it is not possible to click and drag a 'slider' of this type.
-; This is because Cabbage will not read changes in mouse position when the mouse button is held.
-; Therefore the sliders in this example change simply when the mouse is hovered over their area in the panel.
 ; In addition to changing size, the image/slider also increases in colour intensity as it is raised.
 
 ; Macros are used to faciliate the reuse of the relevant code in this example in other csds.

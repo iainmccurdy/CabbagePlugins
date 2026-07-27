@@ -29,37 +29,37 @@ https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode */
 ; Level       -  output level control
 
 <Cabbage>
-form caption("Band Filter"), colour(70,70,70), size(490,430), pluginId("band"), guiMode("queue") 
+form caption("Band Filter"), colour(70,70,70), size(510,430), pluginId("band"), guiMode("queue") 
 xypad bounds(5, 5, 350, 350), channel("cf", "bw"), rangeX(0, 1, 0.5), rangeY(0, 1, 0.3), text("x:cutoff | y:bandwidth"), colour(40,40,50)
 
 hslider bounds( 15,356,330, 10), channel("cfS"), range(0,1) ; cutoff
 vslider bounds(356, 15, 10,285), channel("bwS"), range(0,1) ; bandwidth
 
-image bounds(375, 10,120,360), colour(0,0,0,0)
+image bounds(375, 10,130,360), colour(0,0,0,0)
 {
-checkbox bounds(  0,  0,120, 15), channel("balance"), fontColour:0("white"), fontColour:1("white"),  value(0), text("Balance")
-checkbox bounds(  0, 20,120, 15), channel("test"), fontColour:0("white"), fontColour:1("white"),  value(0), text("Test (w. noise)")
+checkbox bounds(  0,  0,130, 15), channel("balance"), fontColour:0("white"), fontColour:1("white"),  value(0), text("Balance")
+checkbox bounds(  0, 20,130, 15), channel("test"), fontColour:0("white"), fontColour:1("white"),  value(0), text("Test (white noise)")
 
-label    bounds(  5,  45, 95, 13), text("Filter Type"), fontColour("white"), align("centre")
-combobox bounds(  5,  60, 95, 20), channel("type"), value(1), text("reson","butterbp","areson","butterbr","bqrez","spf","svn","zdf_2pole 1","zdf_2pole 2","zdf_2pole 3")
+label    bounds( 15,  45, 95, 13), text("Filter Type"), fontColour("white"), align("centre")
+combobox bounds( 15,  60, 95, 20), channel("type"), value(1), text("reson","butterbp","areson","butterbr","bqrez","spf","svn","zdf_2pole 1","zdf_2pole 2","zdf_2pole 3")
 
-rslider bounds(  8, 95, 90, 90), text("Mix"),       colour(27,59,59),trackerColour(127,159,159),textColour("white"),fontColour("white"),        channel("mix"),     range(0, 1.00, 1), markerColour("white")
-rslider bounds(  8,195, 90, 90), text("Level"),     colour(27,59,59),trackerColour(127,159,159),textColour("white"),fontColour("white"),        channel("level"),   range(0, 1.00, 1), markerColour("white")
+rslider bounds( 18, 95, 90, 90), text("Mix"),       colour(27,59,59),trackerColour(127,159,159),textColour("white"),fontColour("white"),        channel("mix"),     range(0, 1.00, 1), markerColour("white")
+rslider bounds( 18,195, 90, 90), text("Level"),     colour(27,59,59),trackerColour(127,159,159),textColour("white"),fontColour("white"),        channel("level"),   range(0, 1.00, 1), markerColour("white")
 
-nslider  bounds(  0,300, 50, 30), text("CF (Hz.)"), textColour("white"), channel("cfDisp"), range(1, 20000, 1, 1, 1)
-nslider  bounds( 55,300, 50, 30), text("BW (Hz.)"), textColour("white"), channel("bwDisp"), range(1, 20000, 1, 1, 1)
+nslider  bounds(  0,300, 60, 30), text("CF (Hz.)"), textColour("white"), channel("cfDisp"), range(1, 20000, 1, 1, 1)
+nslider  bounds( 65,300, 60, 30), text("BW (Hz.)"), textColour("white"), channel("bwDisp"), range(1, 20000, 1, 1, 1)
 }
 
 
 
-image bounds( 5, 370, 480, 45), colour(30,30,40), channel("enclosure")
+image bounds( 5, 370, 500, 45), colour(30,30,40), channel("enclosure")
 {
 ;signaldisplay bounds(  0, 0,480,45), colour("LightBlue"), alpha(0.85), displayType("spectroscope"), backgroundColour("Black"), zoom(-1), signalVariable("aSig", "a2z"), channel("display");, fontColour(0,0,0,0)
 image bounds( 0,0,1,35), channel("bandImg"), alpha(0.35), colour("yellow")
 }
 
 label bounds(  6,369, 40, 12), text("20 Hz"), align("left")
-label bounds(444,369, 40, 12), text("18 kHz"), align("right")
+label bounds(464,369, 40, 12), text("18 kHz"), align("right")
 
 label    bounds(  5,416,110, 12), text("Iain McCurdy |2012|"), align("left")
 </Cabbage>

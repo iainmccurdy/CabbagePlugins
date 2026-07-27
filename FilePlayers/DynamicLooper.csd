@@ -1,4 +1,4 @@
-
+x`x`
 /* Attribution-NonCommercial-ShareAlike 4.0 International
 Attribution - You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
 NonCommercial - You may not use the material for commercial purposes.
@@ -230,7 +230,8 @@ kMouseXPrev        =                   kMouseX
 
 ; mouse to transpose
 kYNorm   limit   1 - ((kMouseY-iBounds[1]) / iBounds[3]), 0, 1
-if kMouseDownLeft==1 && cabbageGetValue:k("Y2Trans")==1 then
+;if kMouseDownLeft==1 && cabbageGetValue:k("Y2Trans")==1 then
+if cabbageGetValue:k("Y2Trans")==1 then
           cabbageSetValue "transpose", scale:k(kYNorm,72,-72), changed:k(kYNorm)
 endif
 

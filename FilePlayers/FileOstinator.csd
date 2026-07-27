@@ -5,10 +5,11 @@ NonCommercial - You may not use the material for commercial purposes.
 ShareAlike - If you remix, transform, or build upon the material, you must distribute your contributions under the same license as the original.
 https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode */
 
-; OstinatorFile
+; FileOstinator
 ; Written by Iain McCurdy, 2025
 
-; OstinatorFile uses streaming phase vocoding to play back selected fragments of a sound file - ostinati - in various ways.
+; FileOstinator uses streaming phase vocoding to play back selected fragments of a sound file - ostinati - in various ways.
+; This is very similar to an example called Ostinator in the Live Sampling category.
 
 ; Buttons
 ; OPEN FILE     -   browse for a sound file

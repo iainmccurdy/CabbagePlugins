@@ -559,9 +559,6 @@ instr    2    ; triggered by 'play/stop' button and right-click on file panel
     a1             zdf_2pole           a1, a(cpsoct(gkHPF_CF)), 0.5, 1
     a2             zdf_2pole           a2, a(cpsoct(gkHPF_CF)), 0.5, 1
    endif
-  
-   
-   
 
                    outs                a1 * aenv * klevel, a2 * aenv * klevel        ; send stereo signal to outputs
   endif

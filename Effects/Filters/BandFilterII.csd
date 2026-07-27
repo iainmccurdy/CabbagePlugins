@@ -9,7 +9,7 @@ https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode */
 ; Written by Iain McCurdy, 2015.
 
 ; This version of the bandpass filter is implemented using separate high-pass and low-pass filters.
-; By using this approach, the natures and characters of the two filters can changed independently.
+; By using this approach, the natures and characters of the two barriers can be changed independently.
 ; The cutoffs of these filters can be controlled using the xypad.
 ; The cutoffs can be controlled by either the XY pad or the hrange sliders.
 
@@ -27,7 +27,7 @@ https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode */
 <Cabbage>                                                                                                                   
 form caption("Bandfilter II"), colour(20,20,20), size(510, 655), pluginId("BFII"), guiMode("queue")
 
-checkbox bounds(9,3,90,15), channel("TestSound"), text("Test Sound"), value(0), fontColour(150,150,150)
+checkbox bounds(9,3,200,15), channel("TestSound"), text("Test Sound (white noise)"), value(0), fontColour(150,150,150)
 
 xypad bounds(5,20, 500, 500), channel("shift", "width"), rangeX(0, 1, 0.5), rangeY(0, 1, 0.5), text("x:cutoff y:bandwidth"), colour(20,20,30), fontColour("white")
 

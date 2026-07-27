@@ -84,7 +84,7 @@ rslider  bounds(500, 15, 45, 65), text("14"), channel("Note14"), range(-12, 96, 
 rslider  bounds(535, 15, 45, 65), text("15"), channel("Note15"), range(-12, 96, 60, 1, 1), valueTextBox(1), textBox(1), fontColour("black"), $RSliderStyle
 rslider  bounds(570, 15, 45, 65), text("16"), channel("Note16"), range(-12, 96, 60, 1, 1), valueTextBox(1), textBox(1), fontColour("black"), $RSliderStyle
 
-label    bounds( 10, 82, 40, 12), text("On/Off"), fontColour("black"), FontColour("black")
+label    bounds( 10, 82, 40, 12), text("On/Off"), fontColour("black"), fontColour("black")
 checkbox bounds( 61, 82, 12, 12), channel("On1"),  value(0)
 checkbox bounds( 96, 82, 12, 12), channel("On2"),  value(0)
 checkbox bounds(131, 82, 12, 12), channel("On3"),  value(0)
@@ -102,7 +102,7 @@ checkbox bounds(516, 82, 12, 12), channel("On14"), value(0)
 checkbox bounds(551, 82, 12, 12), channel("On15"), value(0)
 checkbox bounds(586, 82, 12, 12), channel("On16"), value(0)
 
-label    bounds( 11,100, 40, 12), text("Hold"), fontColour("black"), FontColour("black")
+label    bounds( 11,100, 40, 12), text("Hold"), fontColour("black"), fontColour("black")
 checkbox bounds( 61,100, 12, 12), channel("Hold1"),  value(0)
 checkbox bounds( 96,100, 12, 12), channel("Hold2"),  value(0)
 checkbox bounds(131,100, 12, 12), channel("Hold3"),  value(0)
@@ -120,7 +120,7 @@ checkbox bounds(516,100, 12, 12), channel("Hold14"), value(0)
 checkbox bounds(551,100, 12, 12), channel("Hold15"), value(0)
 checkbox bounds(586,100, 12, 12), channel("Hold16"), value(0)
 
-label    bounds( 11,118, 40, 12), text("Accent"), fontColour("black"), FontColour("black")
+label    bounds( 11,118, 40, 12), text("Accent"), fontColour("black"), fontColour("black")
 checkbox bounds( 61,118, 12, 12), channel("Acc1"),  value(0)
 checkbox bounds( 96,118, 12, 12), channel("Acc2"),  value(0)
 checkbox bounds(131,118, 12, 12), channel("Acc3"),  value(0)
@@ -138,8 +138,8 @@ checkbox bounds(516,118, 12, 12), channel("Acc14"), value(0)
 checkbox bounds(551,118, 12, 12), channel("Acc15"), value(0)
 checkbox bounds(586,118, 12, 12), channel("Acc16"), value(0)
 
-button   bounds( 10,150, 70, 25), fontColour:0(50,50,50), fontColour:1(205,255,205), colour:0(0,10,0), colour:1(0,150,0), text("Play","Play"), channel("Play"), latched(1), radioGroup(1), value(1), identChannel("PlayButton")
-button   bounds( 10,180, 70, 25), fontColour:0(50,50,50), fontColour:1(255,205,205), colour:0(10,0,0), colour:1(150,0,0), text("Stop","Stop"), channel("Stop"), latched(1), radioGroup(1), identChannel("StopButton")
+button   bounds( 10,150, 70, 25), channel("Play"), fontColour:0(50,50,50), fontColour:1(205,255,205), colour:0(0,10,0), colour:1(0,150,0), text("Play","Play"), latched(1), radioGroup(1), value(1), identChannel("PlayButton"), corners(5)
+button   bounds( 10,180, 70, 25), channel("Stop"), fontColour:0(50,50,50), fontColour:1(255,205,205), colour:0(10,0,0), colour:1(150,0,0), text("Stop","Stop"), latched(1), radioGroup(1), identChannel("StopButton"), corners(5)
 
 rslider  bounds( 80,140, 60, 80), text("Cutoff"),  channel("CfBase"),  range(0,1,0.3),              $RSliderStyle
 rslider  bounds(135,140, 60, 80), text("Env.Mod"), channel("CfEnv"),   range(-1,1.00, 0.38),        $RSliderStyle

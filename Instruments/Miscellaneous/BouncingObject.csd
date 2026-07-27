@@ -25,7 +25,7 @@ https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode */
 <Cabbage>
 form caption("Bouncing Object"), size(390, 648), pluginId("bnOb"), colour("Black")
 
-#define RSliderStyle trackerColour(255,255,255), colour(100,200,140), outlineColour(40,40,40), textColour("white"), valueTextBox(1)
+#define RSliderStyle trackerColour(255,255,255), colour(100,200,140), outlineColour(40,40,40), textColour("white"), fontColour("white"), valueTextBox(1)
 
 image      bounds(  5,  5,380, 70), colour( 50,100, 70), outlineColour("white"), line(2), shape("sharp"), plant("main")
 {

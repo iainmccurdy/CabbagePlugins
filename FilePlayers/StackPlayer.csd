@@ -76,8 +76,13 @@ https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode */
 
 ; Level                                     - output level of the instrument
 
+; If notes are triggered from the MIDI keyboard, 'Speed/Pitch' is governed by the note played 
+;  with middle C producing a unison / '1' pitch value.
+; Release                                   - extends the note after key release and applies a decaying amplitude envelope.
+; Key velocity also controls amplitude.
+
 <Cabbage>
-form caption("Stack Player") size(1405,330), colour(40,50,60) pluginId("T3Pl"), guiMode("queue")
+form caption("Stack Player") size(1405,430), colour(40,50,60) pluginId("T3Pl"), guiMode("queue")
 
 #define DIAL_STYLE_K valueTextBox(1)
 #define DIAL_STYLE_I valueTextBox(1), trackerColour(200,100,100)
@@ -126,7 +131,9 @@ checkbox   bounds(1170,240, 80, 15), channel("OS_Lin"), text("Linear"), fontColo
 checkbox   bounds(1170,260, 80, 15), channel("OS_Rnd"), text("Random"), fontColour:0("white"), fontColour:1("white"), radioGroup(2)
 rslider    bounds(1245,205, 70,100), channel("Amp"), range(0, 2, 0.7, 0.5), colour(60, 60,100), text("Level"), $DIAL_STYLE_K
 
-label    bounds(  5,317,120, 12), text("Iain McCurdy |2023|"), align("left"), fontColour("Silver")
+rslider  bounds(  5,325,  90, 90), channel("EnvRel"), text("Release"),   range(0.05, 16, 0.2, 0.5), colour(50, 60, 60), trackerColour("silver"), textColour("white"), valueTextBox(1)
+keyboard bounds(155,325,1195, 85)
+label    bounds(  5,417, 120, 12), text("Iain McCurdy |2023|"), align("left"), fontColour("Silver")
 
 </Cabbage>
 
@@ -143,6 +150,7 @@ ksmps  = 8
 nchnls = 2
 0dbfs  = 1
 
+                   massign             0, 2
 gichans            init                0
 giFileSR           init                sr
 giFileLen          init                0
@@ -291,7 +299,8 @@ opcode playerPulseLayer, a, kiiiikkkkiiiiio
   kVal             =                   sinh( ( iNdx*2 - 1) * kMlt) / sinh(kMlt) ; -1 to +1, iNdx = 0 to 1
   kSpeedL          =                   kSpeed * semitone(kInterval*kVal)
  endif
-  
+ 
+ ; all table reading with a raw index and no looping (looping controlled externally)
  if iInterp==1 then                                          ; no interpolation
   aSig             table               aPtr, ifn, 0, 0, 0
  elseif iInterp==2 then                                      ; linear interpolation
@@ -308,7 +317,12 @@ opcode playerPulseLayer, a, kiiiikkkkiiiiio
  kAmp              portk               kAmp, linseg:k(0,0.01,0.05)
  aSig              *=                  a(kAmp)
  
- kPtr              wrap                kPtr + (ksmps * (iFileSR/sr) * kSpeedL), 0, sr * 1  ; increment pointer
+ if iLooped==1 then ; looping on
+  kPtr              wrap                kPtr + (ksmps * (iFileSR/sr) * kSpeedL), 0, ftlen(ifn)  ; increment pointer
+ else               ; looping off
+  kPtr              limit               kPtr + (ksmps * (iFileSR/sr) * kSpeedL), 0, ftlen(ifn)  ; increment pointer
+ endif
+
  aMix              =                   0
  if iCount<(iNLayers-1) then
   aMix             playerPulseLayer         kSpeed, iwsize, ifn, iLooped, iFileSR, kInterval, kShape, kIntervalMode, kGlissando, iAmpShape, iInterp, iOS, iOS_Type, iNLayers, iCount + 1
@@ -420,16 +434,30 @@ endin
 
 
 
+giVelEnv ftgen 0,0,128,16,0,128,2,1
 
+instr    2    ; Sample triggered by 'play/stop' button or MIDI notes
+ idefault          =                   1
+ ivalue            =                   0
+                   mididefault         idefault, ivalue ; ivalue overwritten by idefault if MIDI driven
+ if ivalue==1 then ; MIDI
+  kSpeed            init               cpsmidi() / cpsmidinn(8)
+  iEnvRel           cabbageGetValue     "EnvRel"
+  iVel              ampmidi            1, giVelEnv
+  print iVel
+  aEnv              expsegr             0.001, 0.01, iVel, iEnvRel, 0.001
+ else              ; non-MIDI
+  kSpeed            cabbageGetValue     "Speed" 
+  aEnv              expsegr             0.001, 0.01, 1, 0.3, 0.001
+ endif
 
-instr    2    ; Sample triggered by 'play/stop' button
  kPortTime         linseg              0, 0.001, 1
  kGlissando        cabbageGetValue     "Glissando"
- kSpeed            cabbageGetValue     "Speed" 
  kSpeed            portk               kSpeed, kPortTime * kGlissando
  kInterval         portk               gkInterval, kPortTime * kGlissando
  iwsize            =                   8 
  kLooped           cabbageGetValue     "Looped"
+ kLooped           init                1
  kNLayers          cabbageGetValue     "NLayers"
  kNLayers          init                4
  kIntervalMode     cabbageGetValue     "IntervalMode"
@@ -455,7 +483,6 @@ instr    2    ; Sample triggered by 'play/stop' button
  endif
  
  ; envelope on Play/Stop
- aEnv              expsegr             0.001, 0.01, 1, 0.3, 0.001
  aL                *=                  aEnv
  aR                *=                  aEnv
  
