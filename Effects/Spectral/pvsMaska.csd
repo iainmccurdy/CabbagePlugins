@@ -230,8 +230,8 @@ rslider    bounds( 85, 25, 90, 90), channel("Start"), range(0,1024,0,1,1), text(
 rslider    bounds(165, 25, 90, 90), channel("End"),   range(0,1024,1024,1,1), text("End"), $SLIDER_STYLE
 image      bounds(260, 30,  1, 80), colour("silver")
 checkbox   bounds(280, 35,120, 15), channel("SmoothOnOff"), text("Smooth On/Off"), value(0), fontColour:0("white"), fontColour:1("white")
-rslider    bounds(385, 25, 90, 90), channel("AmpSmooth"), range(0,1,0), text("Amp"), $SLIDER_STYLE
-rslider    bounds(465, 25, 90, 90), channel("FreqSmooth"), range(0,1,0), text("Freq"), $SLIDER_STYLE
+rslider    bounds(385, 25, 90, 90), channel("AmpSmooth"), range(0,1,1), text("Amp"), $SLIDER_STYLE
+rslider    bounds(465, 25, 90, 90), channel("FreqSmooth"), range(0,1,1), text("Freq"), $SLIDER_STYLE
 }
 
 label      bounds(5,506,110, 12), text("Iain McCurdy |2024|"), align("left"), fontColour("silver")

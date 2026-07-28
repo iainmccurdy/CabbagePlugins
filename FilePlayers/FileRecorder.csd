@@ -11,8 +11,15 @@ https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode */
 ; Records audio to a file on disk in the user's home directory. 
 ; This file may not appear until the csd is stopped and Cabbage is quit.
 ; 
+; This is intended to be used within the Cabbage patcher in the Cabbage standalone application 
+; - to facilitate capturing audio in real-time.
+;
 ; The audio file name includes the date and time. (This idea comes courtesy of Rory Walsh.)
-; 
+; The date and time in the file name will be prefixed by FileRecorder, 
+;  unless a User File Name is typed into the text box in the GUI in which case this will be used, 
+;  appended by the date and time.
+; Note that you will need to hit return after typing in a name in order for it to be registered.
+
 ; Toggling record off and on will append the new recording onto the end of the previously recorded audio.
 ; To start a new file, click 'New File'.
 
@@ -24,12 +31,14 @@ https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode */
 
 ; Number of channels can be selected from the 'Channels' drop-down menu. If 'Mono' is selected, only the left channels from any stereo input is used.
 
-; This is intended to be used within the Cabbage patcher in the Cabbage standalone application 
-; - to facilitate capturing audio in real-time.
+; Monitor dial controls the level of the live signal entering FileRecorder
+; Playback dial controls the level of the play back of the most recently recorded file.
+
+
 
 <Cabbage>
-form caption("File Recorder") size(300,100), colour(0,0,0) pluginId("FRec"), guiMode("queue")
-image               bounds(  0,  0,300,100), colour(100,100,100), outlineColour("Silver"), outlineThickness(3)
+form caption("File Recorder") size(490,138), colour(0,0,0) pluginId("FRec"), guiMode("queue")
+image               bounds(  0,  0,490,138), colour(100,100,100), outlineColour("Silver"), outlineThickness(3)
 label    bounds( 10,  5, 130, 13), text("Format"), align("centre"), fontColour("white")
 combobox bounds( 10, 20, 130, 20), channel("format"), items("16-bit ints", "32-bit ints", "32-bit floats", "8-bit unsigned ints", "24-bit ints", "64-bit floats", "ogg-vorbis"), value(3)
 
@@ -42,7 +51,13 @@ checkbox bounds( 80, 55, 75, 25), channel("record"), text("Record"), colour("red
 button   bounds(160, 55, 65, 25), colour("red"), text("New File","New File"), channel("reset"), latched(0)
 checkbox bounds(235, 55, 75, 25), channel("play"), text("Play"), colour("green"), fontColour:0("white"), fontColour:1("white")
 
-label    bounds(  5,88,120, 10), text("Iain McCurdy |2014|"), align("left"), fontColour("Silver")
+rslider  bounds(305, 10, 80, 80), channel("MonitorLev"), text("Monitor"), range(0,1,1,0.5), trackerColour(200,200,200), textColour("white")
+rslider  bounds(390, 10, 80, 80), channel("PlayLev"), text("Playback"), range(0,1,1,0.5), trackerColour(200,200,200), textColour("white")
+
+label    bounds( 5,104, 95,14), text("User File Name:"), fontColour("white")
+texteditor bounds(105,100,370,22) fontSize(16), channel("UserFileName"), scrollbars(0), wrap(0),  fontColour(0, 0, 0), colour(200,200,200)
+
+label    bounds(  5,125,120, 10), text("Iain McCurdy |2014|"), align("left"), fontColour("Silver")
 
 </Cabbage>
 
@@ -67,9 +82,14 @@ giFormats[]  fillarray  4, 5, 6, 7, 8, 9, 50
 instr    1
  gkformat    =                   giFormats[cabbageGetValue:k("format") - 1]
  gkchannels  cabbageGetValue     "channels"
- gaL,gaR     ins
- 
+ gaL         inch                1
+ gaR         inch                2
+ kMonitorLev cabbageGetValue     "MonitorLev"
+             outs                gaL * kMonitorLev, gaR * kMonitorLev
+             
  kRMS        rms                 (gaL+gaR)* 0.714
+ 
+ gSUserFileName cabbageGetValue  "UserFileName"
  
  kTrig       metro               32
  kR          =                   kRMS > 0.05 ? 100 : 0
@@ -107,6 +127,7 @@ instr 9000    ; record file
  endif
  gkFileRecorded init             1
  
+ SDir           cabbageGetValue    "USER_HOME_DIRECTORY"
  itim           date
  Stim           dates            itim
  itim           date
@@ -118,8 +139,12 @@ instr 9000    ; record file
  Shor           strsub           Stim, 11, 13
  Smin           strsub           Stim, 14, 16
  Ssec           strsub           Stim, 17, 19
- SDir           cabbageGetValue    "USER_HOME_DIRECTORY"
- gSname         sprintf   "%s/FileRecorder_%s_%s_%02d_%s_%s_%s.wav", SDir, Syear, Smonth, iday, Shor,Smin, Ssec
+ if strlen:i(gSUserFileName)==0 then
+  gSname         sprintf   "%s/FileRecorder_%s_%s_%02d_%s_%s_%s.wav", SDir, Syear, Smonth, iday, Shor,Smin, Ssec
+ else
+  gSname         sprintf   "%s/%s_%s_%s_%02d_%s_%s_%s.wav", SDir, gSUserFileName, Syear, Smonth, iday, Shor,Smin, Ssec
+ endif
+                 prints           gSname
  if gkrecord==1 then ; record
   if i(gkchannels)==1 then ;(mono)
                 fout      gSname, i(gkformat), gaL
@@ -130,12 +155,16 @@ instr 9000    ; record file
  gkRecordingActiveFlag =    1 - release()
 endin
 
+
+
 instr    9001     ; play file
  if gkplay==0 then
                 turnoff
  endif 
    aL,aR        diskin2          gSname,1
-                outs             aL,aR
+ kPlayLev       cabbageGetValue  "PlayLev"
+
+                outs             aL * kPlayLev, aR * kPlayLev
  iFileLen       filelen          gSname
  p3             =                iFileLen
                 xtratim          0.1

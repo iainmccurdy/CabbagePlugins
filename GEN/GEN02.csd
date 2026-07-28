@@ -26,7 +26,7 @@ form caption("GEN02"), size(720, 500), colour( 50, 50, 50),pluginId("gn02"), gui
 #define RSliderStyle # colour("yellow"), outlineColour(100,100,100), trackerColour(150,150,150) valueTextBox(1) #
 
 image   bounds(  5, 5, 50,490), colour(255,255,255,50), shape("sharp"), channel("ScrubberID")                                                                              
-                                                                                                                                                                                                                                          
+
 gentable bounds(  5,  5, 400,140), channel("table1"), alpha(0.5), tableNumber(1), tableColour("yellow"),ampRange(36,108,1,1), zoom(-1), tableGridColour(0,0,0,0), active(1)
 label    bounds(  7,  5, 100, 12), text("NOTES"),      align("left"), fontColour(255,255,255,100)
 nslider  bounds(  5,145, 50, 22), channel("Note1"), range(36,108,0,1,1), active(0)

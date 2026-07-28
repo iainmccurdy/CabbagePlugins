@@ -254,7 +254,7 @@ endin
 
 
 instr 51
-kTrig      metro   p4 * randomi:k(0.9,1,0.2)
+kTrig      metro      p4 * randomi:k(0.9,1,0.2)
 kEnv       linsegr    0,0.05,1,0.05,0
            schedkwhen kTrig,0,0,p1+1,0,0.033,kEnv,p5*random(0.7,1.1)
 endin
