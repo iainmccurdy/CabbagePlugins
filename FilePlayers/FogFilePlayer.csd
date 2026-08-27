@@ -324,7 +324,7 @@ instr    1 ; always on
   RAMP_FUNC:
   krampup          linseg              0,0.001,1
   rireturn
-  iFilerBounds[] cabbageGet "filer",   "bounds"
+  iFilerBounds[]   cabbageGet          "filer", "bounds"
   kMOUSE_X         cabbageGetValue     "MOUSE_X"
   kMOUSE_X         portk               kMOUSE_X,gkport*kRampUp
   kMOUSE_Y         cabbageGetValue     "MOUSE_Y"

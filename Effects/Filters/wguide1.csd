@@ -22,7 +22,8 @@ https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode */
 
 ; Frequency    -    frequency of the waveguide
 ; Note Num.    -    frequency of the waveguide expressed as a note number
-; Width        -    offsets the frequencies of the left and right channels to imbue added stereo width
+; Width        -    offsets the frequencies of the left and right channels to imbue added stereo width.
+;                    The effect is heard most clearly when the input signal is monophonic.
 ; Cutoff       -    cutoff frequency of a lowpass filter within the feedback loop of the waveguide
 ;             cutoff can be defined as a fixed value (in hertz) or as a ratio with the frequency of the waveguide (Ratio x Frequency = cutoff)
 ; Feedback     -    feedback ratio of the waveguide unit.
@@ -45,63 +46,77 @@ https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode */
 ; Level        -    amplitude scaling
 
 <Cabbage>
-form caption("wguide1") size(770,200), pluginId("WGu1"), colour("black"), guiMode("queue")
-image           bounds(0, 0, 770,120), colour(125, 95, 55), shape("sharp"), outlineColour(225,195,155), outlineThickness(2)
+form caption("wguide1") size( 850,220), pluginId("WGu1"), colour("black"), guiMode("queue")
+image           bounds(0, 0,  850,140), colour(125, 95, 55), shape("sharp"), outlineColour(225,195,155), outlineThickness(2)
 
-image    bounds( 10,  0,195,111), colour(0,0,0,0), plant("GUIcontrol"), visible(1) 
+#define SLIDER_DESIGN  trackerColour(225,195,155),  colour( 85, 55,15), textColour("white"), fontColour("white"), valueTextBox(1)
+
+; frequency
+image    bounds( 10,  0,295,131), colour(0,0,0,0), plant("GUIcontrol"), visible(1) 
 {
-checkbox bounds( 10,  7,120, 12), text("Keyboard Input"), channel("input"), fontColour:0("white"), fontColour:1("white"), colour(yellow)
-checkbox bounds( 10, 22,120, 12), text("Low Cut"), channel("LowCut"), fontColour:0("white"), fontColour:1("white"), colour(yellow) value(0)
-label    bounds(130,  8, 62, 11), text("Source"), fontColour("white")
-combobox bounds(130, 20, 62, 16), channel("source"), value(1), text("Live","Gravel","Dust","Air","Click","Pluck")
-rslider  bounds(  0, 41, 70, 70),  text("Frequency"),  channel("freq"),      trackerColour(225,195,155), range(8.2, 12542, 160, 0.25),  colour( 85, 55,15), textColour(white), fontColour("silver")
-rslider  bounds( 65, 41, 70, 70),  text("Note Num."),  channel("notnum"),    trackerColour(225,195,155), range(0, 127, 51, 1,1),        colour( 85, 55,15), textColour(white), fontColour("silver")
+ label    bounds(  0,  6, 70, 13), text("Source"), fontColour("white")
+ combobox bounds(  0, 20, 70, 20), channel("source"), value(1), text("Live","Gravel","Dust","Air","Click","Pluck")
+ rslider  bounds(  0, 41, 70, 90),  text("Input Gain"),  channel("InGain"), range(0, 1, 0, 0.5), $SLIDER_DESIGN
+ checkbox bounds( 80,  7,120, 13), text("Keyboard Input"), channel("input"), fontColour:0("white"), fontColour:1("white"), colour(yellow)
+ checkbox bounds( 80, 24,120, 13), text("Low Cut"), channel("LowCut"), fontColour:0("white"), fontColour:1("white"), colour(yellow) value(0)
+ rslider  bounds( 70, 41, 70, 90),  text("Frequency"),  channel("freq"), range(8.2, 12542, 160, 0.25), $SLIDER_DESIGN
+ rslider  bounds(135, 41, 70, 90),  text("Note Num."),  channel("notnum"), range(0, 127, 51, 1,1), $SLIDER_DESIGN
+ 
+ ; midi
+ image    bounds(100, 50,230, 90) colour(0,0,0,0), channel("MIDITuningID"), visible(0) 
+ {
+  label    bounds(  0,  0, 83, 12), text("MIDI TUNING"), fontColour("white")
+  combobox bounds(  0, 13, 83, 20), channel("Tuning"), items("12-TET", "24-TET", "12-TET rev.", "24-TET rev.", "10-TET", "36-TET", "Just C", "Just C#", "Just D", "Just D#", "Just E", "Just F", "Just F#", "Just G", "Just G#", "Just A", "Just A#", "Just B"), value(1),fontColour("white")
+ }
+ 
+ rslider  bounds(200, 41, 70, 90),  text("Width"),      channel("StWidth"), range(-0.2, 0.2, 0, 1,0.001), $SLIDER_DESIGN
+}
 
-image    bounds( 30, 50,230, 70) colour(0,0,0,0), channel("MIDITuningID"), visible(0) 
+; filter(s)
+image    bounds(287,  4, 86,132), colour(125, 95, 55), outlineColour("silver"), outlineThickness(1), line(1) 
 {
-label    bounds(  0,  0, 83, 12), text("MIDI TUNING"), fontColour("white")
-combobox bounds(  0, 13, 83, 20), channel("Tuning"), items("12-TET", "24-TET", "12-TET rev.", "24-TET rev.", "10-TET", "36-TET", "Just C", "Just C#", "Just D", "Just D#", "Just E", "Just F", "Just F#", "Just G", "Just G#", "Just A", "Just A#", "Just B"), value(1),fontColour("white")
+label    bounds( 15,  2, 56, 13),  text("Cutoff"), fontColour("white")
+combobox bounds( 15, 16, 56, 20),  text("Fixed","Ratio"),channel("CutoffMode"), value(1)
+rslider  bounds( 10, 37, 65, 90),  text("Hertz"),     channel("cutoff"), range(20,20000,8000,0.25,1), $SLIDER_DESIGN
+rslider  bounds( 10, 37, 65, 90),  text("Ratio"),     channel("CutoffRatio"), range(1,40,8), visible(0), $SLIDER_DESIGN
 }
 
-rslider  bounds(130, 41, 70, 70),  text("Width"),      channel("StWidth"),   trackerColour(225,195,155), range(-0.2, 0.2, 0, 1,0.001),        colour( 85, 55,15), textColour(white), fontColour("silver")
-}
-
-image    bounds(207,  4, 66,112), colour(125, 95, 55), outlineColour("silver"), outlineThickness(1), line(1) 
+; feedback
+image    bounds(385, 41, 66,132), colour(0,0,0,0) 
 {
-label    bounds(  5,  4, 56, 11),  text("Cutoff"), fontColour("white")
-combobox bounds(  5, 16, 56, 15),  text("Fixed","Ratio"),channel("CutoffMode"), value(1)
-rslider  bounds(  0, 37, 65, 70),  text("Hertz"),     channel("cutoff"),     trackerColour(225,195,155), range(20,20000,8000,0.25), visible(1), colour( 85, 55,15), textColour(white), fontColour("silver")
-rslider  bounds(  0, 37, 65, 70),  text("Ratio"),     channel("CutoffRatio"),trackerColour(225,195,155), range(1,40,8),             visible(0), colour( 85, 55,15), textColour(white), fontColour("silver")
+rslider  bounds(  0,  0, 70, 90),  text("Feedback"),   channel("feedback"), range(-0.9999999, 0.9999999, 0.8), $SLIDER_DESIGN
 }
 
-image    bounds(275, 41, 66,112), colour(0,0,0,0) {
-rslider  bounds(  0,  0, 70, 70),  text("Feedback"),   channel("feedback"),   trackerColour(225,195,155), range(-0.9999999, 0.9999999, 0.8), colour( 85, 55,15), textColour(white), fontColour("silver")
+; bandpass
+image    bounds(455,  0,166,132), colour(0,0,0,0) 
+{
+combobox bounds(  5,  2,130, 20), text("Bandpass Off","Single Bandpass","Multiple Bandpass"), channel("BandpassMode"), value(1)
+checkbox bounds(  5, 24,120, 13), text("Balance"),         channel("BalanceOnOff"), fontColour:0("white"), fontColour:1("white"), colour(yellow) value(0)
+rslider  bounds(  0, 41, 70, 90),  text("Bandwidth"),      channel("Bandwidth"), range(0.001,100.00,0.2,0.5,0.001), $SLIDER_DESIGN
+rslider  bounds( 65, 41, 70, 90),  text("Harm."),          channel("HarmRatio"), range(1,48,1,1,1), $SLIDER_DESIGN
 }
 
-line     bounds(350,  5,  2,110)
-combobox bounds(360,  5,130, 16), text("Bandpass Off","Single Bandpass","Multiple Bandpass"), channel("BandpassMode"), value(1)
-checkbox bounds(365, 24,120, 12), text("Balance"),         channel("BalanceOnOff"), fontColour:0("white"), fontColour:1("white"), colour(yellow) value(0)
-rslider  bounds(355, 41, 70, 70),  text("Bandwidth"),      channel("Bandwidth"),   trackerColour(225,195,155), range(0.001,100.00,0.2,0.5,0.001),             colour( 85, 55,15), textColour(white), fontColour("silver")
-rslider  bounds(420, 41, 70, 70),  text("Harm."),          channel("HarmRatio"),trackerColour(225,195,155), range(1,48,1,1,1),             colour( 85, 55,15), textColour(white), fontColour("silver")
-line     bounds(495,  5,  2,110)
-
-image     bounds(505,  0,140,112), colour(0,0,0,0) {
-checkbox  bounds( 10, 15,100, 12), text("Detune"), channel("Detune"), fontColour:0("white"), fontColour:1("white"), colour(yellow)
-rslider   bounds(  5, 41, 70, 70), text("Cents"), channel("DetuneAmt"), range(-50, 50, -10, 1,0.1), trackerColour(225,195,155), colour( 85, 55,15), textColour(white), fontColour("silver")
-line      bounds( 90,  5,  2,110)
+; detune
+image     bounds(585,  0,140,132), colour(0,0,0,0) 
+{
+checkbox  bounds( 10, 24,100, 13), text("Detune"), channel("Detune"), fontColour:0("white"), fontColour:1("white"), colour(yellow)
+rslider   bounds(  5, 41, 70, 90), text("Cents"), channel("DetuneAmt"), range(-50, 50, -10, 1,0.1), colour( 85, 55,15), $SLIDER_DESIGN
+line      bounds( 90,  5,  2,130)
 }
 
-image    bounds(615,  0,155,120), colour(0,0,0,0) {
+; output
+image    bounds(695,  0,155,140), colour(0,0,0,0) 
+{
 label    bounds(  5,  4,136, 17), align("centre"), text("W A V E G U I D E"), fontColour(silver)
 image    bounds(  5,  7,125,  1), colour(200,170,130), shape("sharp"), outlineColour(silver), outlineThickness(1)
 image    bounds(  7, 18,124,  1), colour(200,170,130), shape("sharp"), outlineColour(silver), outlineThickness(1)
-label    bounds( 18,109,136, 11), text("Iain McCurdy |2012|"), align("right"), fontColour("silver")
+label    bounds(  5, 24,136, 11), text("Iain McCurdy |2012|"), align("centre"), fontColour("silver")
 
-rslider  bounds(  0, 41, 70, 70),  text("Mix"),        channel("mix"),       trackerColour(225,195,155), range(0, 1.00, 1),             colour( 85, 55,15), textColour(white), fontColour("silver")
-rslider  bounds( 65, 41, 70, 70),  text("Level"),      channel("level"),     trackerColour(225,195,155), range(0, 5.00, 0.7,0.5,0.001),           colour( 85, 55,15), textColour(white), fontColour("silver")
+rslider  bounds(  0, 41, 70, 90),  text("Mix"),        channel("mix"), range(0, 1.00, 1), $SLIDER_DESIGN
+rslider  bounds( 65, 41, 70, 90),  text("Level"),      channel("level"), range(0, 5.00, 0.7,0.5,0.001), $SLIDER_DESIGN
 }
 
-keyboard bounds(  0,210, 770, 80), visible(1), channel("keyboardID")
+keyboard bounds(  0,230, 850, 80), visible(1), channel("keyboardID")
 
 </Cabbage>
 
@@ -146,6 +161,7 @@ giTTable18  ftgen      0,         0,       64,       -2,          12,          2
 instr    1
  kporttime         linseg              0, 0.01, 0.03              ; CREATE A VARIABLE THAT WILL BE USED FOR PORTAMENTO TIME
  gkinput           cabbageGetValue     "input"                    ; READ WIDGETS...
+ gkInGain          cabbageGetValue     "InGain"
  gkLowCut          cabbageGetValue     "LowCut"
  gkfreq            cabbageGetValue     "freq"
  gknotnum          cabbageGetValue     "notnum"
@@ -176,8 +192,8 @@ instr    1
                    cabbageSet          1, "MIDITuningID", "visible", gkinput
  endif
 
-                   schedkwhen          trigger(gkinput,0.5,0),0,0,99,0,1,210,115
-                   schedkwhen          trigger(gkinput,0.5,1),0,0,99,0,1,120,210
+                   schedkwhen          trigger(gkinput,0.5,0),0,0,99,0,1,230,135
+                   schedkwhen          trigger(gkinput,0.5,1),0,0,99,0,1,150,230
 
  ktrig1            changed             gkfreq
  ktrig2            changed             gknotnum
@@ -211,7 +227,9 @@ instr    1
   elseif gksource==4 then
   gasigL           = pinker:a() * 0.2
   gasigR           = pinker:a() * 0.2
- endif    
+ endif
+ gasigL            *= gkInGain
+ gasigR            *= gkInGain
 endin
 
 
@@ -335,9 +353,9 @@ instr    2
 endin
 
 
-instr    99
+instr    99 ; animate keyboard
  ky                line                p4, p3, p5
-                   cabbageSet          metro:k(16),"keyboardID", "bounds", 0, ky, 770, 80
+                   cabbageSet          metro:k(16),"keyboardID", "bounds", 0, ky, 850, 80
 endin
 
 </CsInstruments>

@@ -37,27 +37,30 @@ https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode */
 
 
 <Cabbage>
-form caption("File Recorder") size(490,138), colour(0,0,0) pluginId("FRec"), guiMode("queue")
-image               bounds(  0,  0,490,138), colour(100,100,100), outlineColour("Silver"), outlineThickness(3)
-label    bounds( 10,  5, 130, 13), text("Format"), align("centre"), fontColour("white")
-combobox bounds( 10, 20, 130, 20), channel("format"), items("16-bit ints", "32-bit ints", "32-bit floats", "8-bit unsigned ints", "24-bit ints", "64-bit floats", "ogg-vorbis"), value(3)
+form caption("File Recorder") size(450,128), colour(0,0,0) pluginId("FRec"), guiMode("queue")
+image               bounds(  0,  0,450,128), colour(100,100,100), outlineColour("Silver"), outlineThickness(3)
 
-label    bounds(160,  5, 70, 13), text("Channels"), align("centre"), fontColour("white")
-combobox bounds(160, 20, 70, 20), channel("channels"), items("Mono", "Stereo"), value(2)
+button   bounds( 10,  8, 75, 25), channel("record"), text("Record"), colour:0(50,10,10), colour:1(255,50,50), latched(1), fontColour:0("white"), fontColour:1("white"), corners(5)
+button   bounds( 90,  8, 75, 25), channel("play"), text("Play"), colour:0(10,50,10), colour:1(50,255,50), latched(1), fontColour:0("white"), fontColour:1("white"), corners(5)
+button   bounds(170,  8, 75, 25), channel("reset"), text("New File","New File"), colour:0(50,50,10), colour:1(250,250,100), latched(0), corners(5)
 
-checkbox bounds( 10, 50, 65, 15), text("CLIP"), channel("red"), shape("ellipse"), value(1), fontColour:0("white"), fontColour:1("white") ;, active(0)
-checkbox bounds( 10, 70, 65, 15), text("SIGNAL"), channel("green"), shape("ellipse"), value(1), fontColour:0("white"), fontColour:1("white");, active(0)
-checkbox bounds( 80, 55, 75, 25), channel("record"), text("Record"), colour("red"), fontColour:0("white"), fontColour:1("white")
-button   bounds(160, 55, 65, 25), colour("red"), text("New File","New File"), channel("reset"), latched(0)
-checkbox bounds(235, 55, 75, 25), channel("play"), text("Play"), colour("green"), fontColour:0("white"), fontColour:1("white")
+checkbox bounds( 10, 40, 65, 15), text("CLIP"), channel("red"), shape("ellipse"), value(1), fontColour:0("white"), fontColour:1("white") ;, active(0)
+checkbox bounds( 10, 60, 65, 15), text("SIGNAL"), channel("green"), shape("ellipse"), value(1), fontColour:0("white"), fontColour:1("white");, active(0)
 
-rslider  bounds(305, 10, 80, 80), channel("MonitorLev"), text("Monitor"), range(0,1,1,0.5), trackerColour(200,200,200), textColour("white")
-rslider  bounds(390, 10, 80, 80), channel("PlayLev"), text("Playback"), range(0,1,1,0.5), trackerColour(200,200,200), textColour("white")
+label    bounds( 80, 40, 130, 13), text("Format"), align("centre"), fontColour("white")
+combobox bounds( 80, 55, 130, 20), channel("format"), items("16-bit ints", "32-bit ints", "32-bit floats", "8-bit unsigned ints", "24-bit ints", "64-bit floats", "ogg-vorbis"), value(3)
 
-label    bounds( 5,104, 95,14), text("User File Name:"), fontColour("white")
-texteditor bounds(105,100,370,22) fontSize(16), channel("UserFileName"), scrollbars(0), wrap(0),  fontColour(0, 0, 0), colour(200,200,200)
 
-label    bounds(  5,125,120, 10), text("Iain McCurdy |2014|"), align("left"), fontColour("Silver")
+label    bounds(220, 40, 70, 13), text("Channels"), align("centre"), fontColour("white")
+combobox bounds(220, 55, 70, 20), channel("channels"), items("Mono", "Stereo"), value(2)
+
+rslider  bounds(290,  5, 80, 70), channel("MonitorLev"), text("Monitor"), range(0,1,1,0.5), trackerColour(200,200,200), textColour("white")
+rslider  bounds(360,  5, 80, 70), channel("PlayLev"), text("Playback"), range(0,1,1,0.5), trackerColour(200,200,200), textColour("white")
+
+label      bounds(  5, 95, 95,14), text("User File Name:"), fontColour("white")
+texteditor bounds(105, 90,330,22) fontSize(16), channel("UserFileName"), scrollbars(0), wrap(0),  fontColour(0, 0, 0), colour(200,200,200)
+
+label    bounds(  5,115,120, 10), text("Iain McCurdy |2014|"), align("left"), fontColour("Silver")
 
 </Cabbage>
 
