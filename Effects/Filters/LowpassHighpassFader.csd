@@ -26,6 +26,12 @@ https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode */
 
 ; 'Lag' controls the amount of smoothing lag that is applied to both filter cutoff frequencies and amplitude value.
 
+; 'Test' interrupts the live input audio stream with a pink noise test signal
+
+; 'Balance' balances the RMS of the output sound with that of the input sound 
+;   so that energy losses resulting from filtering are mitigated against.
+; This is done before amplitude shaping.
+
 ; INPUT -> LOW-PASS FILTER -> HIGH-PASS FILTER -> AMPLITUDE CONTROL -> OUTPUT
 
 
@@ -39,6 +45,8 @@ nslider bounds(360, 10, 80, 40), channel("LPF"), range(20,20000,20,1,1), text("L
 nslider bounds(360, 60, 80, 40), channel("HPF"), range(20,20000,20,1,1), text("HPF Cutoff"), active(0), fontColour(100,255,255), textColour(100,255,255)
 nslider bounds(360,110, 80, 40), channel("Amp"), range(0,1,1,1,0.001), text("Amplitude"), active(0), fontColour(255,100,255), textColour(255,100,255)
 rslider bounds(360,160, 80,100), channel("Lag"), range(0,1,0.05,0.6,0.001), text("Lag"), fontColour("white"), textColour("white"), valueTextBox(1), trackerColour("white")
+button  bounds(360,270, 80, 20), channel("Test"), latched(1), text("Test","Test"), colour:0(10,10,10), colour:1(250,250,60), fontColour:0(210,210,210), fontColour:1(0,0,0)
+button  bounds(360,300, 80, 20), channel("Balance"), latched(1), text("Balance","Balance"), colour:0(10,10,10), colour:1(250,250,60), fontColour:0(210,210,210), fontColour:1(0,0,0)
 vslider bounds(450,  5, 50,350), channel("LPFMin"), range(4,14,4,1,0.1), text("LPF Min"), fontColour("white"), textColour("white"), valueTextBox(0), trackerColour(255,255,100)
 vslider bounds(500,  5, 50,350), channel("LPFMax"), range(4,14,14,1,0.1), text("LPF Max"), fontColour("white"), textColour("white"), valueTextBox(0), trackerColour(255,255,100)
 vslider bounds(550,  5, 50,350), channel("HPFMin"), range(4,14,4,1,0.1), text("HPF Min"), fontColour("white"), textColour("white"), valueTextBox(0), trackerColour(100,255,255)
@@ -70,10 +78,12 @@ instr   1
 a1                 inch                1
 a2                 inch                2
 
-a1                 pinker
-a2                 pinker
-a1                 *=                  0.02
-a2                 *=                  0.02
+if cabbageGetValue:k("Test")==1 then
+ a1                 pinker
+ a2                 pinker
+ a1                 *=                  0.2
+ a2                 *=                  0.2
+endif
 
 kX                 cabbageGetValue     "X"
 kY                 cabbageGetValue     "Y"
@@ -112,28 +122,33 @@ rireturn
                    cabbageSet          changed:k(kHPF_CF), "HPFWidg", "bounds", iBounds[0] + kY*iBounds[2]-4, iBounds[1] - 4 + (1 - (kHPF_CF-4)/10) * iBounds[2], 8, 8
  kHPF_CF           portk               kHPF_CF, kLag
  kHPF_CF           =                   cpsoct(kHPF_CF) 
-
- ; amplitude
- kAmp              =                   table:k(kX,iAmpTab,1)
-                   cabbageSet          changed:k(kAmp), "AmpWidg", "bounds", iBounds[0] + kX*iBounds[2]-4, iBounds[1] - 4 + ((1-kAmp) * iBounds[2]), 8, 8
- kAmp              portk               kAmp, kLag
  
  ; print values
                    cabbageSetValue     "LPF", round(kLPF_CF), changed:k(round(kLPF_CF))
                    cabbageSetValue     "HPF", round(kHPF_CF), changed:k(round(kHPF_CF))
-                   cabbageSetValue     "Amp", kAmp, changed:k(kAmp)
  
    kLPFRes         =                   0.5
    kHPFRes         =                   0.5
-   a1              zdf_2pole           a1, a(kLPF_CF), kLPFRes    ; lowpass
-   a2              zdf_2pole           a2, a(kLPF_CF), kLPFRes
-   a1              zdf_2pole           a1, a(kHPF_CF), kHPFRes, 1 ; highpass
-   a2              zdf_2pole           a2, a(kHPF_CF), kHPFRes, 1
- 
-  a1               *=                  a(kAmp)
-  a2               *=                  a(kAmp)
+   a1F             zdf_2pole           a1, a(kLPF_CF), kLPFRes    ; lowpass
+   a2F             zdf_2pole           a2, a(kLPF_CF), kLPFRes
+   a1F             zdf_2pole           a1F, a(kHPF_CF), kHPFRes, 1 ; highpass
+   a2F             zdf_2pole           a2F, a(kHPF_CF), kHPFRes, 1
+
+   ; balance
+   if cabbageGetValue:k("Balance")==1 then
+    a1F              balance             a1F, a1, 2
+    a2F              balance             a2F, a1, 2
+   endif
+   
+   ; amplitude
+   kAmp             =                   table:k(kX,iAmpTab,1)
+                    cabbageSet          changed:k(kAmp), "AmpWidg", "bounds", iBounds[0] + kX*iBounds[2]-4, iBounds[1] - 4 + ((1-kAmp) * iBounds[2]), 8, 8
+   kAmp             portk               kAmp, kLag
+                    cabbageSetValue     "Amp", kAmp, changed:k(kAmp)
+   a1F              *=                  a(kAmp)
+   a2F              *=                  a(kAmp)
   
-  outs a1,a2
+                    outs                a1F, a2F
 endin
 
 </CsInstruments>

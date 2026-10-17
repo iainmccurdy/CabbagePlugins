@@ -477,7 +477,7 @@ instr    2    ; Sample triggered by 'play/stop' button or MIDI notes
  aL                playerPulseLayer    kSpeed,iwsize,gitableL,i(kLooped),giFileSR,kInterval,gkShape,kIntervalMode,kGlissando,giAmpShape,i(kInterp),i(kOS),i(kOS_Type),i(kNLayers) 
  if                gichans==2 then
   ;aR               playerLayer         kSpeed,iwsize,gitableR,i(kLooped),giFileSR,kInterval,gkShape,kIntervalMode,kGlissando,giAmpShape,i(kInterp),i(kOS),i(kOS_Type),i(kNLayers)
-  aR                playerPulseLayer    kSpeed,iwsize,gitableL,i(kLooped),giFileSR,kInterval,gkShape,kIntervalMode,kGlissando,giAmpShape,i(kInterp),i(kOS),i(kOS_Type),i(kNLayers)
+  aR                playerPulseLayer    kSpeed,iwsize,gitableR,i(kLooped),giFileSR,kInterval,gkShape,kIntervalMode,kGlissando,giAmpShape,i(kInterp),i(kOS),i(kOS_Type),i(kNLayers)
   else
   aR               =                   aL
  endif

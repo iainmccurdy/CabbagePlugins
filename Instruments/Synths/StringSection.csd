@@ -124,6 +124,7 @@ iCPS        cpsmidi                                                            ;
 iNote       notnum                                                             ; read in MIDI note number
 iVel        ampmidi 1                                                          ; read in MIDI key velocity
 kModWhl     ctrl7   1,1,0,1 ; mod wheel
+kModWhl     portk   kModWhl, linseg:k(0,0.01,0.05)
 kPchBnd     pchbend 0, 2    ; pitch bend wheel (semitones)
 
 ; SUSTAIN TONE

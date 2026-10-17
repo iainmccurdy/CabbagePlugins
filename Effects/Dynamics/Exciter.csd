@@ -126,7 +126,7 @@ instr 1
   
  ; exciter
  aE1               exciter             a1, kfreq, kceil, kharms, kblend
- aE2               exciter             a1, kfreq, kceil, kharms, kblend
+ aE2               exciter             a2, kfreq, kceil, kharms, kblend
 
  ; mixer
  a1                ntrpol              a1, aE1, kmix                      ; dry/wet mix

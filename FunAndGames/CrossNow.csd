@@ -21,6 +21,8 @@ https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode */
 ; The transition glissando goes from 3500 to 750 Hz in approximately 0.121 seconds. Its envelope is more of a decay envelope.
 ; The 'walk now' clicks are 505 Hz tones, 0.035 seconds duration each and repeating at 8.13 Hz.
 
+; Pressing the button triggers a 2350Hz beep for 0.045s.
+
 ; A lesser know feature of the Dublin pedestrian crossings is that they monitor external ambient sound levels and adjust the levels of the beeps accordingly.
 ; For example, when a lorry passes, the beeps will audibly rise in amplitude. This is essentially an envelope follower and has been added to this emulation.
 
@@ -66,10 +68,16 @@ giGlissEnd        = 750     ; oscillator frequency at end of glissando
 giCrossDur        = 0.035   ; duration of each individual 'cross now' click
 giCrossRate       = 8.13    ; rate of repetition of 'cross now' clicks
 giCrossFreq       = 505     ; oscillator frequency of cross now clicks
+giPressButtonDur  = 0.045   ; beep when pressing the button
+giPressButtonFreq = 2350    ; frequency of the pressing the button beep
 
 instr 1
 gkstate init 0  ; 0=wait 1=cross now
 kButton  cabbageGetValue  "Button"
+
+if trigger:k(kButton,0.5,0)==1 && gkstate==0 then
+         event "i",6,0,giPressButtonDur
+endif
 
 ; trigger wait beeps
 if gkstate==0 then
@@ -117,6 +125,13 @@ instr 5 ; walk now clicks
 aSig   vco2              0.6, giCrossFreq, 4, 0.5
 aEnv   expseg            0.001,0.003,1,p3-0.003,0.01 ; decay envelope
        chnmix            aSig*aEnv,"Send"
+endin
+
+instr 6 ; press-button beep
+aEnv     expseg           0.001, 0.005, 1, p3-0.01, 1, 0.005, 0.001
+aSig     vco2             0.8, giPressButtonFreq, 4, 0.5
+aSig     *=               aEnv
+         chnmix           aSig,"Send"
 endin
 
 instr 99 ; always on instrument that gathers the various sound components and sends them to the output 

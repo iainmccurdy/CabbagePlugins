@@ -14,30 +14,33 @@ https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode */
 ; If the sum of durations exceeds table size they are automatically scaled down in order to prevent crashes.
 
 <Cabbage>
-form caption("GEN16"), size(365, 440), pluginId("gn16"), colour(100,100,110), guiMode("queue")
+form caption("GEN16"), size(435, 440), pluginId("gn16"), colour(100,100,110), guiMode("queue")
 
-gentable bounds( 10,  5,345,120), tableNumber(1), tableColour("silver"), channel("table"), zoom(-1), ampRange(1,0,1)
+gentable bounds( 10,  5,415,120), tableNumber(1), tableColour("silver"), channel("table"), zoom(-1), ampRange(1,0,1)
 image    bounds( 10,  5,  1,120), channel("wiper")
 #define SLIDER_SETTINGS textBox(1), fontColour("white"), textColour("white"), trackerColour("silver"), valueTextBox(1)
 
 rslider bounds(  0,130, 70, 90), channel("val1"), text("Value.1"), range(0, 1, 0),   colour(80,80,80), $SLIDER_SETTINGS
 rslider bounds( 70,130, 70, 90), channel("val2"), text("Value.2"), range(0, 1, 1),   colour(80,80,80), $SLIDER_SETTINGS
 rslider bounds(140,130, 70, 90), channel("val3"), text("Value.3"), range(0, 1, 0.2), colour(80,80,80), $SLIDER_SETTINGS
-rslider bounds(210,130, 70, 90), channel("val4"), text("Value.4"), range(0, 1, 0),   colour(80,80,80), $SLIDER_SETTINGS
+rslider bounds(210,130, 70, 90), channel("val4"), text("Value.4"), range(0, 1, 0.2), colour(80,80,80), $SLIDER_SETTINGS
+rslider bounds(280,130, 70, 90), channel("val5"), text("Value.5"), range(0, 1, 0),   colour(80,80,80), $SLIDER_SETTINGS
 
 rslider bounds( 30,230, 70, 90), channel("dur1"), text("Dur.1"), range(1, 4096, 80, 1, 1),   colour(80,80,80), $SLIDER_SETTINGS
 rslider bounds(100,230, 70, 90), channel("dur2"), text("Dur.2"), range(1, 4096, 1000, 1, 1), colour(80,80,80), $SLIDER_SETTINGS
 rslider bounds(170,230, 70, 90), channel("dur3"), text("Dur.3"), range(1, 4096, 3016, 1, 1), colour(80,80,80), $SLIDER_SETTINGS
+rslider bounds(240,230, 70, 90), channel("dur4"), text("Dur.4"), range(1, 4096, 3016, 1, 1), colour(80,80,80), $SLIDER_SETTINGS
 
 rslider bounds( 30,330, 70, 90), channel("shp1"), text("Shape.1"), range(-20, 20, 3),   colour(80,80,80), $SLIDER_SETTINGS
 rslider bounds(100,330, 70, 90), channel("shp2"), text("Shape.2"), range(-20, 20, -3),  colour(80,80,80), $SLIDER_SETTINGS
 rslider bounds(170,330, 70, 90), channel("shp3"), text("Shape.3"), range(-20, 20, 1.5), colour(80,80,80), $SLIDER_SETTINGS
+rslider bounds(240,330, 70, 90), channel("shp4"), text("Shape.4"), range(-20, 20, 1.5), colour(80,80,80), $SLIDER_SETTINGS
 
-rslider bounds(295,130, 70, 90), channel("speed"), text("Speed"), range(0.25, 8.00, 0.5,0.5,0.001),  colour(80,80,80), $SLIDER_SETTINGS
-rslider bounds(295,230, 70, 90), channel("freq"),  text("Freq."), range(50, 5000, 300,0.5,0.1),      colour(80,80,80), $SLIDER_SETTINGS
-rslider bounds(295,330, 70, 90), channel("lev"),   text("Level"), range(0, 1.00, 0.5),               colour(80,80,80), $SLIDER_SETTINGS
+rslider bounds(365,130, 70, 90), channel("speed"), text("Speed"), range(0.25, 8.00, 0.5,0.5,0.001),  colour(80,80,80), $SLIDER_SETTINGS
+rslider bounds(365,230, 70, 90), channel("freq"),  text("Freq."), range(50, 5000, 300,0.5,0.1),      colour(80,80,80), $SLIDER_SETTINGS
+rslider bounds(365,330, 70, 90), channel("lev"),   text("Level"), range(0, 1.00, 0.5),               colour(80,80,80), $SLIDER_SETTINGS
 
-line    bounds(285,140,  2,290), colour("Grey")
+line    bounds(355,140,  2,290), colour("Grey")
 
 label    bounds(   2,427,110, 12), text("Iain McCurdy |2013|"), fontColour("silver"), align("left")
 
@@ -64,32 +67,37 @@ instr    1
     gkval2    cabbageGetValue    "val2"
     gkval3    cabbageGetValue    "val3"
     gkval4    cabbageGetValue    "val4"
+    gkval5    cabbageGetValue    "val5"
 
     gkdur1    cabbageGetValue    "dur1"
     gkdur2    cabbageGetValue    "dur2"
     gkdur3    cabbageGetValue    "dur3"
+    gkdur4    cabbageGetValue    "dur4"
 
     gkshp1    cabbageGetValue    "shp1"
     gkshp2    cabbageGetValue    "shp2"
     gkshp3    cabbageGetValue    "shp3"
+    gkshp4    cabbageGetValue    "shp4"
 
     ; build table
     ; if any of the variables in the input list are changed, a momentary '1' trigger is generated at the output. This trigger is used to update function tables.
-    ktrig     changed            gkval1,gkval2,gkval3,gkval4,gkdur1,gkdur2,gkdur3,gkshp1,gkshp2,gkshp3
+    ktrig     changed            gkval1,gkval2,gkval3,gkval4,gkval5, gkdur1,gkdur2,gkdur3,gkdur4, gkshp1,gkshp2,gkshp3,gkshp4
     if ktrig==1 then
      reinit REBUILD_TABLE
     endif
     REBUILD_TABLE:
-      if    (i(gkdur1)+i(gkdur2)+i(gkdur3))>4096 then
-       idur1  =                  i(gkdur1)* (4096/(i(gkdur1)+i(gkdur2)+i(gkdur3)))
-       idur2  =                  i(gkdur2)* (4096/(i(gkdur1)+i(gkdur2)+i(gkdur3)))
-       idur3  =                  i(gkdur3)* (4096/(i(gkdur1)+i(gkdur2)+i(gkdur3)))
+      if    (i(gkdur1)+i(gkdur2)+i(gkdur3)+i(gkdur4))>4096 then
+       idur1  =                  i(gkdur1)* (4096/(i(gkdur1)+i(gkdur2)+i(gkdur3)+i(gkdur4)))
+       idur2  =                  i(gkdur2)* (4096/(i(gkdur1)+i(gkdur2)+i(gkdur3)+i(gkdur4)))
+       idur3  =                  i(gkdur3)* (4096/(i(gkdur1)+i(gkdur2)+i(gkdur3)+i(gkdur4)))
+       idur4  =                  i(gkdur4)* (4096/(i(gkdur1)+i(gkdur2)+i(gkdur3)+i(gkdur4)))
       else
        idur1  =                  i(gkdur1)
        idur2  =                  i(gkdur2)
        idur3  =                  i(gkdur3)
+       idur4  =                  i(gkdur4)
       endif
-    gi1       ftgen              1, 0,   4096,-16, i(gkval1), idur1, i(gkshp1), i(gkval2), idur2, i(gkshp2), i(gkval3), idur3, i(gkshp3), i(gkval4)
+    gi1       ftgen              1, 0,   4096,-16, i(gkval1), idur1, i(gkshp1), i(gkval2), idur2, i(gkshp2), i(gkval3), idur3, i(gkshp3), i(gkval4), idur4, i(gkshp4), i(gkval5)
     rireturn 
               cabbageSet         ktrig, "table", "tableNumber", 1     ; update table display    
     
